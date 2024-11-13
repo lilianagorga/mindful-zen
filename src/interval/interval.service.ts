@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Interval } from './entities/interval.entity';
+import { Interval } from '../entities/interval.entity';
 
 @Injectable()
 export class IntervalService {

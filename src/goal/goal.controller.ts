@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { GoalService } from './goal.service';
-import { Goal } from './entities/goal.entity';
+import { Goal } from '../entities/goal.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('goals')
 export class GoalController {
@@ -12,6 +13,7 @@ export class GoalController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   createGoal(@Body() createGoalDto: Partial<Goal>): Promise<Goal> {
     return this.goalService.create(createGoalDto);
   }

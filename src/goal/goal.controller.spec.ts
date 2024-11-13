@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GoalController } from './goal.controller';
 import { GoalService } from './goal.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Goal } from './entities/goal.entity';
+import { Goal } from '../entities/goal.entity';
 import { Repository } from 'typeorm';
 
 describe('GoalController', () => {

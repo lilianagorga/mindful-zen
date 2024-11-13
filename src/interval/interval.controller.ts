@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { IntervalService } from './interval.service';
-import { Interval } from './entities/interval.entity';
+import { Interval } from '../entities/interval.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('intervals')
 export class IntervalController {
@@ -17,9 +18,14 @@ export class IntervalController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   createInterval(
     @Body() createIntervalDto: Partial<Interval>,
   ): Promise<Interval> {
-    return this.intervalService.create(createIntervalDto);
+    try {
+      return this.intervalService.create(createIntervalDto);
+    } catch (error) {
+      throw error;
+    }
   }
 }

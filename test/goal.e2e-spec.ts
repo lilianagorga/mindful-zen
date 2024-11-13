@@ -10,6 +10,7 @@ describe('GoalController (e2e)', () => {
   let createdUserId: number;
   let createdIntervalId: number;
   let createdGoalId: number;
+  let userToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -48,19 +49,40 @@ describe('GoalController (e2e)', () => {
     }
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   it('/goals (GET)', async () => {
     await request(app.getHttpServer()).get('/goals').expect(200).expect([]);
   });
 
   it('should create and retrieve a goal', async () => {
     const userResponse = await request(app.getHttpServer())
-      .post('/users')
-      .send({ email: 'test@example.com', firstName: 'Test', lastName: 'User' })
+      .post('/users/register')
+      .send({
+        email: 'testUserGoal@example.com',
+        password: 'TestPassword123',
+        firstName: 'Test',
+        lastName: 'User',
+        role: 'user',
+      })
       .expect(201);
-    createdUserId = userResponse.body.id;
+    createdUserId = userResponse.body.user?.id;
+    expect(createdUserId).toBeDefined();
+    const loginResponse = await request(app.getHttpServer())
+      .post('/users/login')
+      .send({
+        email: 'testUserGoal@example.com',
+        password: 'TestPassword123',
+      })
+      .expect(200);
+    userToken = loginResponse.body.token;
+    expect(userToken).toBeDefined();
 
     const intervalResponse = await request(app.getHttpServer())
       .post('/intervals')
+      .set('Authorization', `Bearer ${userToken}`)
       .send({
         startDate: new Date().toISOString(),
         endDate: new Date(Date.now() + 3600 * 1000).toISOString(),
@@ -68,7 +90,7 @@ describe('GoalController (e2e)', () => {
       })
       .expect(201);
     createdIntervalId = intervalResponse.body.id;
-
+    expect(createdIntervalId).toBeDefined();
     const goalData = {
       name: 'Test Goal',
       intervalId: createdIntervalId,
@@ -76,10 +98,11 @@ describe('GoalController (e2e)', () => {
 
     const goalResponse = await request(app.getHttpServer())
       .post('/goals')
+      .set('Authorization', `Bearer ${userToken}`)
       .send(goalData)
       .expect(201);
     createdGoalId = goalResponse.body.id;
-
+    expect(createdGoalId).toBeDefined();
     const getGoalsResponse = await request(app.getHttpServer())
       .get('/goals')
       .expect(200);
