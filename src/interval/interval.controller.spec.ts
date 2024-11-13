@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IntervalController } from './interval.controller';
 import { IntervalService } from './interval.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Interval } from './entities/interval.entity';
+import { Interval } from '../entities/interval.entity';
 import { Repository } from 'typeorm';
 
 describe('IntervalController', () => {
