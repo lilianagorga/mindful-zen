@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DataSource } from 'typeorm';
+import { User } from '../src/entities/user.entity';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
@@ -160,6 +161,54 @@ describe('UserController (e2e)', () => {
   it("should not allow a user to retrieve another user's data", async () => {
     await request(app.getHttpServer())
       .get(`/users/${createdAdminId}`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(403);
+  });
+
+  it('should allow an admin to update a user', async () => {
+    const updatedData = { firstName: 'UpdatedName' };
+    const updateResponse = await request(app.getHttpServer())
+      .put(`/users/${createdUserId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(updatedData)
+      .expect(200);
+
+    expect(updateResponse.body.firstName).toBe('UpdatedName');
+  });
+
+  it('should allow a user to update their own data', async () => {
+    const updatedData = { lastName: 'UpdatedLastName' };
+    const updateResponse = await request(app.getHttpServer())
+      .put(`/users/${createdUserId}`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send(updatedData)
+      .expect(200);
+
+    expect(updateResponse.body.lastName).toBe('UpdatedLastName');
+  });
+
+  it("should not allow a user to update another user's data", async () => {
+    await request(app.getHttpServer())
+      .put(`/users/${createdAdminId}`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ firstName: 'Hacker' })
+      .expect(403);
+  });
+
+  it('should allow an admin to delete a user', async () => {
+    await request(app.getHttpServer())
+      .delete(`/users/${createdUserId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    const userExists = await dataSource
+      .getRepository(User)
+      .findOne({ where: { id: createdUserId } });
+    expect(userExists).toBeNull();
+  });
+
+  it("should not allow a user to delete another user's account", async () => {
+    await request(app.getHttpServer())
+      .delete(`/users/${createdAdminId}`)
       .set('Authorization', `Bearer ${userToken}`)
       .expect(403);
   });

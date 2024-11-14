@@ -11,6 +11,14 @@ describe('UserController', () => {
   let userController: UserController;
   let userService: UserService;
 
+  const mockUser = {
+    id: 1,
+    email: 'test@example.com',
+    firstName: 'Test',
+    lastName: 'User',
+    role: 'user',
+  };
+
   beforeEach(async () => {
     const mockGuard = {
       canActivate: jest.fn(() => true),
@@ -40,5 +48,41 @@ describe('UserController', () => {
     const result = [{ id: 1, email: 'test@example.com' }];
     jest.spyOn(userService, 'findAll').mockResolvedValue(result as User[]);
     expect(await userController.getAllUsers()).toBe(result);
+  });
+
+  it('should return a user by id', async () => {
+    jest.spyOn(userService, 'findById').mockResolvedValue(mockUser as User);
+    expect(await userController.getUserById('1')).toBe(mockUser);
+  });
+
+  it('should create a new user', async () => {
+    const createUserDto = {
+      email: 'new@example.com',
+      password: 'password123',
+      firstName: 'New',
+      lastName: 'User',
+    };
+    const createdUser = { ...mockUser, id: 2, ...createUserDto };
+    jest
+      .spyOn(userService, 'register')
+      .mockResolvedValue({ token: 'fakeToken', user: createdUser });
+    expect(await userController.registerUser(createUserDto)).toEqual({
+      token: 'fakeToken',
+      user: createdUser,
+    });
+  });
+
+  it('should update a user', async () => {
+    const updateUserDto = { firstName: 'Updated' };
+    const updatedUser = { ...mockUser, ...updateUserDto };
+    jest.spyOn(userService, 'update').mockResolvedValue(updatedUser as User);
+    expect(await userController.updateUser('1', updateUserDto)).toBe(
+      updatedUser,
+    );
+  });
+
+  it('should delete a user', async () => {
+    jest.spyOn(userService, 'delete').mockResolvedValue();
+    await expect(userController.deleteUser('1')).resolves.toBeUndefined();
   });
 });
