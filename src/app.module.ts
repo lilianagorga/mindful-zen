@@ -13,6 +13,8 @@ import { IntervalModule } from './interval/interval.module';
 import { GoalModule } from './goal/goal.module';
 import { roles } from './roles/roles';
 import { AccessControlModule } from 'nest-access-control';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -22,8 +24,21 @@ import { AccessControlModule } from 'nest-access-control';
     UserModule,
     IntervalModule,
     GoalModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
   ],
   controllers: [AppController, HomeController],
-  providers: [AppService, HomeService],
+  providers: [
+    AppService,
+    HomeService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
