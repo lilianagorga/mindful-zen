@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DataSource } from 'typeorm';
+import { Goal } from '../src/entities/goal.entity';
 
 describe('GoalController (e2e)', () => {
   let app: INestApplication;
@@ -122,5 +123,154 @@ describe('GoalController (e2e)', () => {
         intervalId: createdIntervalId,
       }),
     );
+  });
+
+  it('should retrieve a single goal by id', async () => {
+    const intervalResponse = await request(app.getHttpServer())
+      .post('/intervals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 3600 * 1000).toISOString(),
+        userId: createdUserId,
+      })
+      .expect(201);
+    createdIntervalId = intervalResponse.body.id;
+    expect(createdIntervalId).toBeDefined();
+
+    const goalData = {
+      name: 'Test Goal',
+      intervalId: createdIntervalId,
+    };
+
+    const goalResponse = await request(app.getHttpServer())
+      .post('/goals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(goalData)
+      .expect(201);
+    createdGoalId = goalResponse.body.id;
+    expect(createdGoalId).toBeDefined();
+
+    const getGoalResponse = await request(app.getHttpServer())
+      .get(`/goals/${createdGoalId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+
+    expect(getGoalResponse.body).toEqual(
+      expect.objectContaining({
+        id: createdGoalId,
+        name: goalData.name,
+        intervalId: createdIntervalId,
+      }),
+    );
+  });
+
+  it('should update a goal', async () => {
+    const intervalResponse = await request(app.getHttpServer())
+      .post('/intervals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 3600 * 1000).toISOString(),
+        userId: createdUserId,
+      })
+      .expect(201);
+    createdIntervalId = intervalResponse.body.id;
+    expect(createdIntervalId).toBeDefined();
+
+    const goalData = {
+      name: 'Test Goal',
+      intervalId: createdIntervalId,
+    };
+
+    const goalResponse = await request(app.getHttpServer())
+      .post('/goals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(goalData)
+      .expect(201);
+    createdGoalId = goalResponse.body.id;
+    expect(createdGoalId).toBeDefined();
+
+    const updatedGoalData = { name: 'Updated Goal Name' };
+    const updateResponse = await request(app.getHttpServer())
+      .put(`/goals/${createdGoalId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(updatedGoalData)
+      .expect(200);
+
+    expect(updateResponse.body.name).toBe(updatedGoalData.name);
+  });
+
+  it('should partially update a goal', async () => {
+    const intervalResponse = await request(app.getHttpServer())
+      .post('/intervals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 3600 * 1000).toISOString(),
+        userId: createdUserId,
+      })
+      .expect(201);
+    createdIntervalId = intervalResponse.body.id;
+    expect(createdIntervalId).toBeDefined();
+
+    const goalData = {
+      name: 'Test Goal',
+      intervalId: createdIntervalId,
+    };
+
+    const goalResponse = await request(app.getHttpServer())
+      .post('/goals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(goalData)
+      .expect(201);
+    createdGoalId = goalResponse.body.id;
+    expect(createdGoalId).toBeDefined();
+
+    const updatedGoalData = { name: 'Partially Updated Goal Name' };
+    const partialUpdateResponse = await request(app.getHttpServer())
+      .patch(`/goals/${createdGoalId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(updatedGoalData)
+      .expect(200);
+
+    expect(partialUpdateResponse.body.name).toBe(updatedGoalData.name);
+  });
+
+  it('should delete a goal', async () => {
+    const intervalResponse = await request(app.getHttpServer())
+      .post('/intervals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 3600 * 1000).toISOString(),
+        userId: createdUserId,
+      })
+      .expect(201);
+    createdIntervalId = intervalResponse.body.id;
+    expect(createdIntervalId).toBeDefined();
+
+    const goalData = {
+      name: 'Test Goal',
+      intervalId: createdIntervalId,
+    };
+
+    const goalResponse = await request(app.getHttpServer())
+      .post('/goals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(goalData)
+      .expect(201);
+    createdGoalId = goalResponse.body.id;
+    expect(createdGoalId).toBeDefined();
+
+    await request(app.getHttpServer())
+      .delete(`/goals/${createdGoalId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+
+    const goalExists = await dataSource
+      .getRepository(Goal)
+      .findOne({ where: { id: createdGoalId } });
+    expect(goalExists).toBeNull();
   });
 });

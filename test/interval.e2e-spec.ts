@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DataSource } from 'typeorm';
+import { Interval } from '../src/entities/interval.entity';
 
 describe('IntervalController (e2e)', () => {
   let app: INestApplication;
@@ -103,5 +104,112 @@ describe('IntervalController (e2e)', () => {
         userId: createdUserId,
       }),
     );
+  });
+
+  it('should retrieve a single interval by id', async () => {
+    const intervalData = {
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 3600 * 1000).toISOString(),
+      userId: createdUserId,
+    };
+
+    const intervalResponse = await request(app.getHttpServer())
+      .post('/intervals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(intervalData)
+      .expect(201);
+    const createdInterval = intervalResponse.body;
+    createdIntervalId = createdInterval.id;
+
+    const getIntervalResponse = await request(app.getHttpServer())
+      .get(`/intervals/${createdIntervalId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+
+    expect(getIntervalResponse.body).toEqual(
+      expect.objectContaining({
+        id: createdIntervalId,
+        startDate: intervalData.startDate,
+        endDate: intervalData.endDate,
+        userId: createdUserId,
+      }),
+    );
+  });
+
+  it('should update an interval', async () => {
+    const intervalData = {
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 3600 * 1000).toISOString(),
+      userId: createdUserId,
+    };
+
+    const intervalResponse = await request(app.getHttpServer())
+      .post('/intervals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(intervalData)
+      .expect(201);
+    createdIntervalId = intervalResponse.body.id;
+
+    const updatedData = {
+      endDate: new Date(Date.now() + 7200 * 1000).toISOString(),
+    };
+    const updateResponse = await request(app.getHttpServer())
+      .put(`/intervals/${createdIntervalId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(updatedData)
+      .expect(200);
+
+    expect(updateResponse.body.endDate).toBe(updatedData.endDate);
+  });
+
+  it('should partially update an interval', async () => {
+    const intervalData = {
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 3600 * 1000).toISOString(),
+      userId: createdUserId,
+    };
+
+    const intervalResponse = await request(app.getHttpServer())
+      .post('/intervals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(intervalData)
+      .expect(201);
+    createdIntervalId = intervalResponse.body.id;
+
+    const updatedData = {
+      startDate: new Date(Date.now() + 1800 * 1000).toISOString(),
+    };
+    const partialUpdateResponse = await request(app.getHttpServer())
+      .patch(`/intervals/${createdIntervalId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(updatedData)
+      .expect(200);
+
+    expect(partialUpdateResponse.body.startDate).toBe(updatedData.startDate);
+  });
+
+  it('should delete an interval', async () => {
+    const intervalData = {
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 3600 * 1000).toISOString(),
+      userId: createdUserId,
+    };
+
+    const intervalResponse = await request(app.getHttpServer())
+      .post('/intervals')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(intervalData)
+      .expect(201);
+    createdIntervalId = intervalResponse.body.id;
+
+    await request(app.getHttpServer())
+      .delete(`/intervals/${createdIntervalId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+
+    const intervalExists = await dataSource
+      .getRepository(Interval)
+      .findOne({ where: { id: createdIntervalId } });
+    expect(intervalExists).toBeNull();
   });
 });
