@@ -22,6 +22,8 @@ describe('HomeController (e2e)', () => {
   it('/home (GET)', async () => {
     const response = await request(app.getHttpServer()).get('/home');
     expect(response.status).toBe(200);
-    expect(response.text).toBe('Welcome to the Mindful Zen API!');
+    expect(response.body).toEqual({
+      message: 'Welcome to the Mindful Zen API!',
+    });
   });
 });

@@ -6,6 +6,16 @@ import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { RolesGuard } from '../roles/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Response } from 'express';
+
+const mockResponse = () => {
+  const res: Partial<Response> = {};
+  res.json = jest.fn().mockReturnValue(res);
+  res.status = jest.fn().mockReturnValue(res);
+  res.render = jest.fn().mockReturnValue(res);
+  res.redirect = jest.fn().mockReturnValue(res);
+  return res as Response;
+};
 
 describe('UserController', () => {
   let userController: UserController;
@@ -47,7 +57,9 @@ describe('UserController', () => {
   it('should return all users', async () => {
     const result = [{ id: 1, email: 'test@example.com' }];
     jest.spyOn(userService, 'findAll').mockResolvedValue(result as User[]);
-    expect(await userController.getAllUsers()).toBe(result);
+    const res = mockResponse();
+    await userController.getAllUsers(res);
+    expect(res.json).toHaveBeenCalledWith(result);
   });
 
   it('should return a user by id', async () => {
@@ -66,7 +78,9 @@ describe('UserController', () => {
     jest
       .spyOn(userService, 'register')
       .mockResolvedValue({ token: 'fakeToken', user: createdUser });
-    expect(await userController.registerUser(createUserDto)).toEqual({
+    const res = mockResponse(); // Passa il mock `Response`
+    await userController.registerUser(createUserDto, res);
+    expect(res.json).toHaveBeenCalledWith({
       token: 'fakeToken',
       user: createdUser,
     });

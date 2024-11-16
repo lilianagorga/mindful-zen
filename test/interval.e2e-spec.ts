@@ -31,6 +31,7 @@ describe('IntervalController (e2e)', () => {
         firstName: 'Admin',
         lastName: 'User',
         role: 'admin',
+        source: 'test',
       })
       .expect(201);
     createdUserId = adminRegisterResponse.body.user?.id;

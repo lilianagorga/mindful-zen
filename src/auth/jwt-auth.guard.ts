@@ -29,6 +29,9 @@ export class JwtAuthGuard {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       return authHeader.slice(7);
     }
+    if (request.cookies && request.cookies.jwt) {
+      return request.cookies.jwt;
+    }
     return null;
   }
 }

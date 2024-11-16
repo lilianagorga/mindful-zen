@@ -31,6 +31,7 @@ describe('UserController (e2e)', () => {
         firstName: 'Admin',
         lastName: 'User',
         role: 'admin',
+        source: 'test',
       })
       .expect(201);
     createdAdminId = adminRegisterResponse.body.user?.id;
@@ -54,6 +55,7 @@ describe('UserController (e2e)', () => {
         firstName: 'Regular',
         lastName: 'User',
         role: 'user',
+        source: 'test',
       })
       .expect(201);
     createdUserId = userRegisterResponse.body.user?.id;
@@ -125,6 +127,7 @@ describe('UserController (e2e)', () => {
         firstName: 'Test',
         lastName: 'User',
         role: 'user',
+        source: 'test',
       })
       .expect(201);
 
