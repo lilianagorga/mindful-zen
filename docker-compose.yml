@@ -1,0 +1,48 @@
+services:
+  app:
+    build: .
+    container_name: my-nestjs-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - DB_TEST_NAME=${DB_TEST_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - BCRYPT_SALT_ROUNDS=${BCRYPT_SALT_ROUNDS}
+    networks:
+      - app-network
+
+  db:
+    image: postgres:latest
+    container_name: postgres-db-dev
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  db_test:
+    image: postgres:latest
+    container_name: postgres-db-test
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_TEST_NAME}
+    ports:
+      - "5433:5432"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
