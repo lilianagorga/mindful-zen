@@ -1,6 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HomeController } from './home.controller';
 import { HomeService } from './home.service';
+import { Response } from 'express';
+
+const mockResponse = () => {
+  const res: Partial<Response> = {};
+  res.json = jest.fn().mockReturnValue(res);
+  res.render = jest.fn().mockReturnValue(res);
+  return res as Response;
+};
 
 describe('HomeController', () => {
   let homeController: HomeController;
@@ -26,6 +34,11 @@ describe('HomeController', () => {
       .spyOn(homeService, 'getWelcomeMessage')
       .mockImplementation(() => result);
 
-    expect(homeController.getHomePage()).toBe(result);
+    const res = mockResponse();
+    process.env.NODE_ENV = 'development';
+
+    homeController.getHomePage(res);
+    expect(res.render).toHaveBeenCalledWith('index', { message: result });
+    delete process.env.NODE_ENV;
   });
 });

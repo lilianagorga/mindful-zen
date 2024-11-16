@@ -19,4 +19,8 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   role?: string;
+
+  @IsOptional()
+  @IsString()
+  source?: string;
 }

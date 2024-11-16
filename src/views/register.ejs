@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+</head>
+<body>
+  <h1>Register</h1>
+  <form id="registerForm">
+    <input type="hidden" id="source" name="source" value="frontend">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br>
+    <label for="firstName">First Name:</label>
+    <input type="text" id="firstName" name="firstName"><br>
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="lastName" name="lastName"><br>
+    <button type="submit">Register</button>
+  </form>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const data = {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        source: document.getElementById('source').value
+      };
+      try {
+        await axios.post('/users/register', data, { withCredentials: true });
+        window.location.href = '/users/login';
+      } catch (error) {
+        alert('Registration failed: ' + error.response.data.message);
+      }
+    });
+  </script>
+</body>
+</html>

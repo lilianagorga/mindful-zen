@@ -32,6 +32,7 @@ describe('GoalController (e2e)', () => {
         firstName: 'Admin',
         lastName: 'User',
         role: 'admin',
+        source: 'test',
       })
       .expect(201);
     createdUserId = userResponse.body.user?.id;

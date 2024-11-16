@@ -71,7 +71,12 @@ describe('UserService', () => {
 
   it('should register a new user', async () => {
     const createUserDto = { email: 'new@example.com', password: 'password' };
-    const savedUser = { id: 2, ...createUserDto, password: 'hashedPassword' };
+    const savedUser = {
+      id: 2,
+      ...createUserDto,
+      password: 'hashedPassword',
+      role: 'user',
+    };
     mockUserRepository.findOne.mockResolvedValue(undefined);
     mockUserRepository.create.mockReturnValue(savedUser);
     mockUserRepository.save.mockResolvedValue(savedUser);
@@ -82,11 +87,12 @@ describe('UserService', () => {
 
     expect(result).toEqual({
       token: 'fakeToken',
-      user: { id: 2, email: 'new@example.com' },
+      user: { id: 2, email: 'new@example.com', role: 'user' },
     });
     expect(mockUserRepository.create).toHaveBeenCalledWith({
       ...createUserDto,
       password: 'hashedPassword',
+      role: 'user',
     });
     expect(mockUserRepository.save).toHaveBeenCalledWith(savedUser);
   });

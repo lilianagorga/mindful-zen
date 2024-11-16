@@ -29,34 +29,49 @@ export class UserService {
   async register(
     createUserDto: CreateUserDto,
   ): Promise<{ token: string; user: Partial<User> }> {
-    const existingUser = await this.userRepository.findOne({
-      where: { email: createUserDto.email },
-    });
-    if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+    try {
+      const existingUser = await this.userRepository.findOne({
+        where: { email: createUserDto.email },
+      });
+      if (existingUser) {
+        throw new ConflictException('User with this email already exists');
+      }
+
+      const saltOrRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
+      const hashedPassword = await bcrypt.hash(
+        createUserDto.password,
+        saltOrRounds,
+      );
+
+      let role = 'user';
+      if (createUserDto.role && createUserDto.source !== 'frontend') {
+        role = createUserDto.role;
+      }
+
+      const user = this.userRepository.create({
+        ...createUserDto,
+        password: hashedPassword,
+        role,
+      });
+
+      const savedUser = await this.userRepository.save(user);
+
+      const userWithoutPassword = { ...savedUser };
+      delete userWithoutPassword.password;
+
+      const token = jwt.sign(
+        { id: savedUser.id, email: savedUser.email, role: savedUser.role },
+        process.env.JWT_SECRET as string,
+        { expiresIn: process.env.JWT_EXPIRES_IN },
+      );
+
+      return { token, user: userWithoutPassword };
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'test') {
+        console.error('Error during user registration:', error);
+      }
+      throw error;
     }
-    const saltOrRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
-    const hashedPassword = await bcrypt.hash(
-      createUserDto.password,
-      saltOrRounds,
-    );
-
-    const user = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
-    });
-
-    const savedUser = await this.userRepository.save(user);
-
-    const userWithoutPassword = { ...savedUser };
-    delete userWithoutPassword.password;
-    const token = jwt.sign(
-      { id: savedUser.id, email: savedUser.email, role: savedUser.role },
-      process.env.JWT_SECRET as string,
-      { expiresIn: process.env.JWT_EXPIRES_IN },
-    );
-
-    return { token, user: userWithoutPassword };
   }
 
   async login(
