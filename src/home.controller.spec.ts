@@ -1,13 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HomeController } from './home.controller';
 import { HomeService } from './home.service';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
 const mockResponse = () => {
   const res: Partial<Response> = {};
   res.json = jest.fn().mockReturnValue(res);
   res.render = jest.fn().mockReturnValue(res);
   return res as Response;
+};
+
+const mockRequest = () => {
+  const req: Partial<Request> = {};
+  req.user = undefined;
+  return req as Request;
 };
 
 describe('HomeController', () => {
@@ -35,10 +41,11 @@ describe('HomeController', () => {
       .mockImplementation(() => result);
 
     const res = mockResponse();
-    process.env.NODE_ENV = 'development';
+    const req = mockRequest();
+    process.env.NODE_ENV = 'test';
 
-    homeController.getHomePage(res);
-    expect(res.render).toHaveBeenCalledWith('index', { message: result });
+    homeController.getHomePage(res, req);
+    expect(res.json).toHaveBeenCalledWith({ message: result });
     delete process.env.NODE_ENV;
   });
 });

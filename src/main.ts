@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import * as cookieParser from 'cookie-parser';
+import * as jwt from 'jsonwebtoken';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -11,6 +12,20 @@ async function bootstrap() {
     origin: 'http://localhost:3000',
     credentials: true,
   });
+
+  app.use((req, res, next) => {
+    const token = req.cookies?.jwt || req.headers.authorization?.split(' ')[1];
+    if (token) {
+      try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET as string);
+        req.user = payload;
+      } catch (err) {
+        console.error('Errore nel decodificare il token:', err.message);
+      }
+    }
+    next();
+  });
+
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'src', 'views'));
   app.setViewEngine('ejs');

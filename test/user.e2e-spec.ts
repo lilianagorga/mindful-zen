@@ -215,4 +215,16 @@ describe('UserController (e2e)', () => {
       .set('Authorization', `Bearer ${userToken}`)
       .expect(403);
   });
+
+  it('/users/logout (GET) - should successfully logout and invalidate the token', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/users/logout')
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(200);
+    expect(response.body.message).toBe('User logged out successfully');
+    await request(app.getHttpServer())
+      .get('/users')
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(401);
+  });
 });

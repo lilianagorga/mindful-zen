@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
+import { tokenBlacklist } from '../token-blacklist';
 
 @Injectable()
 export class JwtAuthGuard {
@@ -12,6 +13,10 @@ export class JwtAuthGuard {
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException('Token not present');
+    }
+
+    if (tokenBlacklist.has(token)) {
+      throw new UnauthorizedException('Token has been invalidated');
     }
 
     try {
