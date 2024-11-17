@@ -1,0 +1,12 @@
+<header>
+  <nav>
+    <p>Welcome to Mindful Zen!</p>
+    <% if (currentUser) { %>
+      <p>Welcome, <%= currentUser.name ? currentUser.name : 'User' %>!</p>
+      <a href="/users/logout">Logout</a>
+    <% } else { %>
+      <a href="/users/login">Login</a>
+      <a href="/users/register">Register</a>
+    <% } %>
+  </nav>
+</header>

@@ -1,0 +1,17 @@
+<footer>
+  <div>
+    <p>&copy; <%= new Date().getFullYear() %> Mindful Zen. All rights reserved.</p>
+    <nav>
+      <a href="/home">Home</a>
+      <% if (currentUser) { %>
+        <a href="/profile">Profile</a>
+        <a href="/users/logout">Logout</a>
+      <% } else { %>
+        <a href="/users/login">Login</a>
+        <a href="/users/register">Register</a>
+      <% } %>
+      <a href="/about">About Us</a>
+      <a href="/contact">Contact</a>
+    </nav>
+  </div>
+</footer>

@@ -6,7 +6,12 @@ import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { RolesGuard } from '../roles/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Response } from 'express';
+import { Response, Request } from 'express';
+import { tokenBlacklist } from '../token-blacklist';
+
+jest.mock('../token-blacklist', () => ({
+  tokenBlacklist: new Set<string>(),
+}));
 
 const mockResponse = () => {
   const res: Partial<Response> = {};
@@ -14,7 +19,14 @@ const mockResponse = () => {
   res.status = jest.fn().mockReturnValue(res);
   res.render = jest.fn().mockReturnValue(res);
   res.redirect = jest.fn().mockReturnValue(res);
+  res.clearCookie = jest.fn();
   return res as Response;
+};
+
+const mockRequest = () => {
+  const req: Partial<Request> = {};
+  req.user = null;
+  return req as Request;
 };
 
 describe('UserController', () => {
@@ -58,7 +70,8 @@ describe('UserController', () => {
     const result = [{ id: 1, email: 'test@example.com' }];
     jest.spyOn(userService, 'findAll').mockResolvedValue(result as User[]);
     const res = mockResponse();
-    await userController.getAllUsers(res);
+    const req = mockRequest();
+    await userController.getAllUsers(res, req);
     expect(res.json).toHaveBeenCalledWith(result);
   });
 
@@ -78,7 +91,7 @@ describe('UserController', () => {
     jest
       .spyOn(userService, 'register')
       .mockResolvedValue({ token: 'fakeToken', user: createdUser });
-    const res = mockResponse(); // Passa il mock `Response`
+    const res = mockResponse();
     await userController.registerUser(createUserDto, res);
     expect(res.json).toHaveBeenCalledWith({
       token: 'fakeToken',
@@ -98,5 +111,21 @@ describe('UserController', () => {
   it('should delete a user', async () => {
     jest.spyOn(userService, 'delete').mockResolvedValue();
     await expect(userController.deleteUser('1')).resolves.toBeUndefined();
+  });
+
+  it('should logout a user and clear the cookie', async () => {
+    const res = mockResponse();
+    const req = {
+      cookies: { jwt: 'fakeToken' },
+      headers: { 'user-agent': 'Some-Agent' },
+    } as Partial<Request> as Request;
+
+    await userController.logoutUser(res, req);
+
+    expect(res.clearCookie).toHaveBeenCalledWith('jwt', { httpOnly: true });
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'User logged out successfully',
+    });
+    expect(tokenBlacklist.has('fakeToken')).toBe(true);
   });
 });
