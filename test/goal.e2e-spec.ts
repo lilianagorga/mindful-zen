@@ -25,7 +25,7 @@ describe('GoalController (e2e)', () => {
 
   beforeEach(async () => {
     const userResponse = await request(app.getHttpServer())
-      .post('/users/register')
+      .post('/register')
       .send({
         email: 'testAdminGoal@example.com',
         password: 'AdminPassword123',
@@ -39,7 +39,7 @@ describe('GoalController (e2e)', () => {
     expect(createdUserId).toBeDefined();
 
     const loginResponse = await request(app.getHttpServer())
-      .post('/users/login')
+      .post('/login')
       .send({
         email: 'testAdminGoal@example.com',
         password: 'AdminPassword123',

@@ -2,9 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
-import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -52,75 +50,6 @@ describe('UserService', () => {
     expect(result).toEqual(user);
     expect(mockUserRepository.findOne).toHaveBeenCalledWith({
       where: { id: 1 },
-    });
-  });
-
-  it('should throw error when registering a user that already exists', async () => {
-    const createUserDto = { email: 'test@example.com', password: 'password' };
-    mockUserRepository.findOne.mockResolvedValue({
-      id: 1,
-      email: 'test@example.com',
-    });
-    await expect(userService.register(createUserDto)).rejects.toThrow(
-      ConflictException,
-    );
-    expect(mockUserRepository.findOne).toHaveBeenCalledWith({
-      where: { email: createUserDto.email },
-    });
-  });
-
-  it('should register a new user', async () => {
-    const createUserDto = { email: 'new@example.com', password: 'password' };
-    const savedUser = {
-      id: 2,
-      ...createUserDto,
-      password: 'hashedPassword',
-      role: 'user',
-    };
-    mockUserRepository.findOne.mockResolvedValue(undefined);
-    mockUserRepository.create.mockReturnValue(savedUser);
-    mockUserRepository.save.mockResolvedValue(savedUser);
-    jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedPassword' as never);
-    jest.spyOn(jwt, 'sign').mockReturnValue('fakeToken' as never);
-
-    const result = await userService.register(createUserDto);
-
-    expect(result).toEqual({
-      token: 'fakeToken',
-      user: { id: 2, email: 'new@example.com', role: 'user' },
-    });
-    expect(mockUserRepository.create).toHaveBeenCalledWith({
-      ...createUserDto,
-      password: 'hashedPassword',
-      role: 'user',
-    });
-    expect(mockUserRepository.save).toHaveBeenCalledWith(savedUser);
-  });
-
-  it('should throw error when login fails due to invalid email', async () => {
-    mockUserRepository.findOne.mockResolvedValue(undefined);
-    await expect(
-      userService.login('invalid@example.com', 'password'),
-    ).rejects.toThrow(Error);
-    expect(mockUserRepository.findOne).toHaveBeenCalledWith({
-      where: { email: 'invalid@example.com' },
-    });
-  });
-
-  it('should login successfully', async () => {
-    const user = {
-      id: 1,
-      email: 'test@example.com',
-      password: 'hashedPassword',
-    };
-    mockUserRepository.findOne.mockResolvedValue(user);
-    jest.spyOn(bcrypt, 'compare').mockImplementation(async () => true);
-    jest.spyOn(jwt, 'sign').mockReturnValue('fakeToken' as never);
-
-    const result = await userService.login('test@example.com', 'password');
-    expect(result).toEqual({
-      token: 'fakeToken',
-      user: { id: 1, email: 'test@example.com' },
     });
   });
 

@@ -26,8 +26,8 @@
           password: document.getElementById('password').value,
         };
         try {
-          const response = await axios.post('/users/login', data, { withCredentials: true });
-        window.location.href = '/home';
+          const response = await axios.post('/login', data, { withCredentials: true });
+        window.location.href = '/';
         } catch (error) {
           alert('Login failed: ' + error.response.data.message);
         }

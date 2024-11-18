@@ -24,7 +24,7 @@ describe('IntervalController (e2e)', () => {
 
   beforeEach(async () => {
     const adminRegisterResponse = await request(app.getHttpServer())
-      .post('/users/register')
+      .post('/register')
       .send({
         email: 'testAdminInterval@example.com',
         password: 'AdminPassword123',
@@ -38,7 +38,7 @@ describe('IntervalController (e2e)', () => {
     expect(createdUserId).toBeDefined();
 
     const adminLoginResponse = await request(app.getHttpServer())
-      .post('/users/login')
+      .post('/login')
       .send({
         email: 'testAdminInterval@example.com',
         password: 'AdminPassword123',
