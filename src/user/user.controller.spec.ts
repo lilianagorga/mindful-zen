@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { RolesGuard } from '../roles/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Response, Request } from 'express';
-import { tokenBlacklist } from '../token-blacklist';
 
 jest.mock('../token-blacklist', () => ({
   tokenBlacklist: new Set<string>(),
@@ -80,25 +79,6 @@ describe('UserController', () => {
     expect(await userController.getUserById('1')).toBe(mockUser);
   });
 
-  it('should create a new user', async () => {
-    const createUserDto = {
-      email: 'new@example.com',
-      password: 'password123',
-      firstName: 'New',
-      lastName: 'User',
-    };
-    const createdUser = { ...mockUser, id: 2, ...createUserDto };
-    jest
-      .spyOn(userService, 'register')
-      .mockResolvedValue({ token: 'fakeToken', user: createdUser });
-    const res = mockResponse();
-    await userController.registerUser(createUserDto, res);
-    expect(res.json).toHaveBeenCalledWith({
-      token: 'fakeToken',
-      user: createdUser,
-    });
-  });
-
   it('should update a user', async () => {
     const updateUserDto = { firstName: 'Updated' };
     const updatedUser = { ...mockUser, ...updateUserDto };
@@ -111,21 +91,5 @@ describe('UserController', () => {
   it('should delete a user', async () => {
     jest.spyOn(userService, 'delete').mockResolvedValue();
     await expect(userController.deleteUser('1')).resolves.toBeUndefined();
-  });
-
-  it('should logout a user and clear the cookie', async () => {
-    const res = mockResponse();
-    const req = {
-      cookies: { jwt: 'fakeToken' },
-      headers: { 'user-agent': 'Some-Agent' },
-    } as Partial<Request> as Request;
-
-    await userController.logoutUser(res, req);
-
-    expect(res.clearCookie).toHaveBeenCalledWith('jwt', { httpOnly: true });
-    expect(res.json).toHaveBeenCalledWith({
-      message: 'User logged out successfully',
-    });
-    expect(tokenBlacklist.has('fakeToken')).toBe(true);
   });
 });

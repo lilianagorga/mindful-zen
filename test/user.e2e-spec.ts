@@ -24,7 +24,7 @@ describe('UserController (e2e)', () => {
     dataSource = app.get(DataSource);
 
     const adminRegisterResponse = await request(app.getHttpServer())
-      .post('/users/register')
+      .post('/register')
       .send({
         email: 'admin@example.com',
         password: 'AdminPassword123',
@@ -38,7 +38,7 @@ describe('UserController (e2e)', () => {
     expect(createdAdminId).toBeDefined();
 
     const adminLoginResponse = await request(app.getHttpServer())
-      .post('/users/login')
+      .post('/login')
       .send({
         email: 'admin@example.com',
         password: 'AdminPassword123',
@@ -48,7 +48,7 @@ describe('UserController (e2e)', () => {
     expect(adminToken).toBeDefined();
 
     const userRegisterResponse = await request(app.getHttpServer())
-      .post('/users/register')
+      .post('/register')
       .send({
         email: 'user@example.com',
         password: 'UserPassword123',
@@ -62,7 +62,7 @@ describe('UserController (e2e)', () => {
     expect(createdUserId).toBeDefined();
 
     const userLoginResponse = await request(app.getHttpServer())
-      .post('/users/login')
+      .post('/login')
       .send({
         email: 'user@example.com',
         password: 'UserPassword123',
@@ -120,7 +120,7 @@ describe('UserController (e2e)', () => {
 
   it('should allow an admin to create and retrieve a new user by ID', async () => {
     const createUserResponse = await request(app.getHttpServer())
-      .post('/users/register')
+      .post('/register')
       .send({
         email: 'testuser@example.com',
         password: 'TestUser123',
@@ -214,17 +214,5 @@ describe('UserController (e2e)', () => {
       .delete(`/users/${createdAdminId}`)
       .set('Authorization', `Bearer ${userToken}`)
       .expect(403);
-  });
-
-  it('/users/logout (GET) - should successfully logout and invalidate the token', async () => {
-    const response = await request(app.getHttpServer())
-      .get('/users/logout')
-      .set('Authorization', `Bearer ${userToken}`)
-      .expect(200);
-    expect(response.body.message).toBe('User logged out successfully');
-    await request(app.getHttpServer())
-      .get('/users')
-      .set('Authorization', `Bearer ${userToken}`)
-      .expect(401);
   });
 });

@@ -33,8 +33,8 @@
           source: document.getElementById('source').value
         };
         try {
-          await axios.post('/users/register', data, { withCredentials: true });
-          window.location.href = '/users/login';
+          await axios.post('/register', data, { withCredentials: true });
+          window.location.href = '/login';
         } catch (error) {
           alert('Registration failed: ' + error.response.data.message);
         }
