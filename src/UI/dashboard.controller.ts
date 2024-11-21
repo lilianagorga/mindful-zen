@@ -12,16 +12,16 @@ import {
   ForbiddenException,
   Post,
 } from '@nestjs/common';
-import { UserService } from './user/user.service';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { RolesGuard } from './roles/roles.guard';
-import { Roles } from './roles/roles.decorator';
+import { UserService } from '../user/user.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../roles/roles.guard';
+import { Roles } from '../roles/roles.decorator';
 import { Request, Response } from 'express';
-import { User } from './entities/user.entity';
-import { Interval } from './entities/interval.entity';
-import { IntervalService } from './interval/interval.service';
-import { Goal } from './entities/goal.entity';
-import { GoalService } from './goal/goal.service';
+import { User } from '../entities/user.entity';
+import { Interval } from '../entities/interval.entity';
+import { IntervalService } from '../interval/interval.service';
+import { Goal } from '../entities/goal.entity';
+import { GoalService } from '../goal/goal.service';
 
 @Controller('dashboard')
 @UseGuards(JwtAuthGuard, RolesGuard)
