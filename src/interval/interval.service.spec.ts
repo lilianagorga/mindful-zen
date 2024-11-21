@@ -45,13 +45,31 @@ describe('IntervalService', () => {
   });
 
   it('should return an interval by id', async () => {
-    const interval = { id: 1, startDate: new Date(), endDate: new Date() };
+    const interval = {
+      id: 1,
+      startDate: new Date(),
+      endDate: new Date(),
+      user: { id: 1 },
+    };
     mockIntervalRepository.findOne.mockResolvedValue(interval);
 
     const result = await intervalService.findById(1);
     expect(result).toEqual(interval);
     expect(mockIntervalRepository.findOne).toHaveBeenCalledWith({
       where: { id: 1 },
+      relations: ['user'],
+    });
+  });
+
+  it('should throw error when interval by id is not found', async () => {
+    mockIntervalRepository.findOne.mockResolvedValue(undefined);
+
+    await expect(intervalService.findById(1)).rejects.toThrow(
+      NotFoundException,
+    );
+    expect(mockIntervalRepository.findOne).toHaveBeenCalledWith({
+      where: { id: 1 },
+      relations: ['user'],
     });
   });
 
@@ -73,7 +91,7 @@ describe('IntervalService', () => {
 
   it('should update an interval', async () => {
     const updateData = { startDate: new Date() };
-    const updatedInterval = { id: 1, ...updateData };
+    const updatedInterval = { id: 1, ...updateData, user: { id: 1 } };
     mockIntervalRepository.update.mockResolvedValue({ affected: 1 });
     mockIntervalRepository.findOne.mockResolvedValue(updatedInterval);
 
@@ -82,6 +100,7 @@ describe('IntervalService', () => {
     expect(mockIntervalRepository.update).toHaveBeenCalledWith(1, updateData);
     expect(mockIntervalRepository.findOne).toHaveBeenCalledWith({
       where: { id: 1 },
+      relations: ['user'],
     });
   });
 

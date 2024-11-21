@@ -9,6 +9,7 @@ import {
   UseGuards,
   Res,
   Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
@@ -34,7 +35,7 @@ export class UserController {
     if (isPostmanRequest) {
       return res.json(users);
     }
-    return res.render('users', { users, currentUser });
+    return res.render('dashboard', { users, currentUser });
   }
 
   @Get(':id')
@@ -51,8 +52,30 @@ export class UserController {
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: Partial<User>,
-  ): Promise<User> {
-    return this.userService.update(parseInt(id, 10), updateUserDto);
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const user = await this.userService.findById(parseInt(id, 10));
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+    if (req.user.role !== 'admin' && user.id !== req.user.id) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const updatedUser = await this.userService.update(
+      parseInt(id, 10),
+      updateUserDto,
+    );
+
+    if (
+      process.env.NODE_ENV === 'test' ||
+      req?.headers['user-agent']?.includes('Postman')
+    ) {
+      return res.json(updatedUser);
+    }
+    const redirectPath = req.user.role === 'admin' ? '/dashboard' : '/profile';
+    return res.redirect(redirectPath);
   }
 
   @Patch(':id')
@@ -61,14 +84,57 @@ export class UserController {
   async partialUpdateUser(
     @Param('id') id: string,
     @Body() updateUserDto: Partial<User>,
-  ): Promise<User> {
-    return this.userService.update(parseInt(id, 10), updateUserDto);
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const user = await this.userService.findById(parseInt(id, 10));
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+    if (req.user.role !== 'admin' && user.id !== req.user.id) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const updatedUser = await this.userService.update(
+      parseInt(id, 10),
+      updateUserDto,
+    );
+
+    if (
+      process.env.NODE_ENV === 'test' ||
+      req?.headers['user-agent']?.includes('Postman')
+    ) {
+      return res.json(updatedUser);
+    }
+    const redirectPath = req.user.role === 'admin' ? '/dashboard' : '/profile';
+    return res.redirect(redirectPath);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'user')
-  async deleteUser(@Param('id') id: string): Promise<void> {
-    return this.userService.delete(parseInt(id, 10));
+  async deleteUser(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const user = await this.userService.findById(parseInt(id, 10));
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+    if (req.user.role !== 'admin' && user.id !== req.user.id) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    await this.userService.delete(parseInt(id, 10));
+
+    if (
+      process.env.NODE_ENV === 'test' ||
+      req?.headers['user-agent']?.includes('Postman')
+    ) {
+      return res.json({ message: 'User deleted successfully' });
+    }
+    const redirectPath = req.user.role === 'admin' ? '/dashboard' : '/profile';
+    return res.redirect(redirectPath);
   }
 }

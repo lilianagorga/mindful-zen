@@ -5,16 +5,39 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Interval } from '../entities/interval.entity';
 import { Repository } from 'typeorm';
 import { CreateIntervalDto } from './create-interval.dto';
+import { Request, Response } from 'express';
 
 describe('IntervalController', () => {
   let intervalController: IntervalController;
 
   const mockIntervalService = {
     findAll: jest.fn(),
+    findByUserOrPublic: jest.fn(),
     findById: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+  };
+
+  const mockAdminRequest = {
+    user: {
+      id: 1,
+      role: 'admin',
+    },
+  } as unknown as Request;
+
+  const mockUserRequest = {
+    user: {
+      id: 2,
+      role: 'user',
+    },
+  } as unknown as Request;
+
+  const mockResponse = () => {
+    const res: Partial<Response> = {};
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+    return res as Response;
   };
 
   beforeEach(async () => {
@@ -39,77 +62,182 @@ describe('IntervalController', () => {
     jest.clearAllMocks();
   });
 
-  it('should return all intervals', async () => {
+  it('should return all intervals for admin', async () => {
     const result = [
       { id: 1, startDate: new Date(), endDate: new Date(), userId: 1 },
     ];
     mockIntervalService.findAll.mockResolvedValue(result);
-    expect(await intervalController.getAllIntervals()).toBe(result);
+
+    const res = mockResponse();
+    await intervalController.getAllIntervals(mockAdminRequest, res);
+
     expect(mockIntervalService.findAll).toHaveBeenCalledTimes(1);
+    expect(mockIntervalService.findByUserOrPublic).not.toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith(result);
   });
 
-  it('should return an interval by id', async () => {
+  it('should return intervals for a user (their own and public)', async () => {
+    const result = [
+      { id: 2, startDate: new Date(), endDate: new Date(), userId: 2 },
+      { id: 3, startDate: new Date(), endDate: new Date(), userId: null },
+    ];
+    mockIntervalService.findByUserOrPublic.mockResolvedValue(result);
+
+    const res = mockResponse();
+    await intervalController.getAllIntervals(mockUserRequest, res);
+
+    expect(mockIntervalService.findByUserOrPublic).toHaveBeenCalledWith(2);
+    expect(mockIntervalService.findAll).not.toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith(result);
+  });
+
+  it('should return an interval by id for admin', async () => {
     const interval = { id: 1, startDate: new Date(), endDate: new Date() };
     mockIntervalService.findById.mockResolvedValue(interval);
-    expect(await intervalController.getIntervalById('1')).toBe(interval);
+
+    const res = mockResponse();
+    await intervalController.getIntervalById('1', mockAdminRequest, res);
+
     expect(mockIntervalService.findById).toHaveBeenCalledWith(1);
+    expect(res.json).toHaveBeenCalledWith(interval);
   });
 
-  it('should create a new interval', async () => {
+  it('should return an interval by id for user if owned or public', async () => {
+    const interval = {
+      id: 2,
+      startDate: new Date(),
+      endDate: new Date(),
+      userId: 2,
+    };
+    mockIntervalService.findById.mockResolvedValue(interval);
+
+    const res = mockResponse();
+    await intervalController.getIntervalById('2', mockUserRequest, res);
+
+    expect(mockIntervalService.findById).toHaveBeenCalledWith(2);
+    expect(res.json).toHaveBeenCalledWith(interval);
+  });
+
+  it('should throw ForbiddenException if user tries to access an interval not owned by them', async () => {
+    const interval = {
+      id: 3,
+      startDate: new Date(),
+      endDate: new Date(),
+      userId: 3, // Non appartiene all'utente della richiesta
+    };
+    mockIntervalService.findById.mockResolvedValue(interval);
+
+    const res = mockResponse();
+    await intervalController.getIntervalById('3', mockUserRequest, res);
+
+    // Verifica che il servizio sia stato chiamato correttamente
+    expect(mockIntervalService.findById).toHaveBeenCalledWith(3);
+
+    // Controllo accesso negato
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Access denied' });
+  });
+
+  it('should create a new interval for a user', async () => {
     const createIntervalDto: CreateIntervalDto = {
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
-      userId: 1,
     };
-    const createdInterval = { id: 1, ...createIntervalDto };
+    const createdInterval = { id: 1, ...createIntervalDto, userId: 2 };
     mockIntervalService.create.mockResolvedValue(createdInterval);
 
-    const result = await intervalController.createInterval(createIntervalDto);
-    expect(result).toBe(createdInterval);
+    const res = mockResponse();
+    await intervalController.createInterval(
+      createIntervalDto,
+      mockUserRequest,
+      res,
+    );
+
     expect(mockIntervalService.create).toHaveBeenCalledWith({
       ...createIntervalDto,
+      userId: 2,
       startDate: new Date(createIntervalDto.startDate),
       endDate: new Date(createIntervalDto.endDate),
     });
+    expect(res.json).toHaveBeenCalledWith(createdInterval);
   });
 
-  it('should update an interval', async () => {
+  it('should update an interval if user is owner or admin', async () => {
     const updateIntervalDto = { startDate: new Date() };
-    const updatedInterval = { id: 1, ...updateIntervalDto };
+    const interval = { id: 1, userId: 2 }; // L'intervallo appartiene all'utente
+    const updatedInterval = { id: 1, ...updateIntervalDto, userId: 2 };
+    mockIntervalService.findById.mockResolvedValue(interval);
     mockIntervalService.update.mockResolvedValue(updatedInterval);
 
-    const result = await intervalController.updateInterval(
+    const res = mockResponse();
+    await intervalController.updateInterval(
       '1',
       updateIntervalDto,
+      mockUserRequest,
+      res,
     );
-    expect(result).toBe(updatedInterval);
-    expect(mockIntervalService.update).toHaveBeenCalledWith(
-      1,
-      updateIntervalDto,
-    );
+
+    expect(mockIntervalService.update).toHaveBeenCalledWith(1, {
+      ...updateIntervalDto,
+      userId: 2,
+    });
+    expect(res.json).toHaveBeenCalledWith(updatedInterval);
   });
 
-  it('should partially update an interval', async () => {
-    const partialUpdateDto = { endDate: new Date() };
-    const updatedInterval = { id: 1, ...partialUpdateDto };
-    mockIntervalService.update.mockResolvedValue(updatedInterval);
+  it('should throw ForbiddenException if user tries to update an interval not owned by them', async () => {
+    const updateIntervalDto = { startDate: new Date() };
 
-    const result = await intervalController.partialUpdateInterval(
+    const interval = {
+      id: 1,
+      startDate: new Date(),
+      endDate: new Date(),
+      userId: 3, // Non appartiene all'utente della richiesta
+    };
+    mockIntervalService.findById.mockResolvedValue(interval);
+
+    const res = mockResponse();
+    await intervalController.updateInterval(
       '1',
-      partialUpdateDto,
+      updateIntervalDto,
+      mockUserRequest,
+      res,
     );
-    expect(result).toBe(updatedInterval);
-    expect(mockIntervalService.update).toHaveBeenCalledWith(
-      1,
-      partialUpdateDto,
-    );
+
+    expect(mockIntervalService.findById).toHaveBeenCalledWith(1);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Access denied' });
   });
 
-  it('should delete an interval', async () => {
+  it('should delete an interval if user is owner or admin', async () => {
+    const interval = { id: 1, userId: 2 };
+    mockIntervalService.findById.mockResolvedValue(interval);
     mockIntervalService.delete.mockResolvedValue(undefined);
-    await expect(
-      intervalController.deleteInterval('1'),
-    ).resolves.toBeUndefined();
+
+    const res = mockResponse();
+    await intervalController.deleteInterval('1', mockUserRequest, res);
+
     expect(mockIntervalService.delete).toHaveBeenCalledWith(1);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Interval deleted successfully',
+    });
+  });
+
+  it('should throw ForbiddenException if user tries to delete an interval not owned by them', async () => {
+    const interval = {
+      id: 1,
+      startDate: new Date(),
+      endDate: new Date(),
+      userId: 3,
+    };
+    mockIntervalService.findById.mockResolvedValue(interval);
+
+    const res = mockResponse();
+    await intervalController.deleteInterval('1', mockUserRequest, res);
+
+    expect(mockIntervalService.findById).toHaveBeenCalledWith(1);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Access denied' });
   });
 });

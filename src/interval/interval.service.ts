@@ -14,8 +14,28 @@ export class IntervalService {
     return this.intervalRepository.find();
   }
 
-  findById(id: number): Promise<Interval | undefined> {
-    return this.intervalRepository.findOne({ where: { id } });
+  findByUserOrPublic(userId: number): Promise<Interval[]> {
+    return this.intervalRepository.find({
+      where: [{ userId }, { userId: null }],
+    });
+  }
+
+  findById(id: number): Promise<Interval> {
+    return this.intervalRepository
+      .findOne({
+        where: { id },
+        relations: ['user'],
+      })
+      .then((interval) => {
+        if (!interval) {
+          throw new NotFoundException(`Interval with ID ${id} not found`);
+        }
+        return interval;
+      });
+  }
+
+  async findAllWithUsers(): Promise<Interval[]> {
+    return this.intervalRepository.find({ relations: ['user'] });
   }
 
   create(intervalData: Partial<Interval>): Promise<Interval> {
@@ -27,6 +47,7 @@ export class IntervalService {
     await this.intervalRepository.update(id, updateData);
     const updatedInterval = await this.intervalRepository.findOne({
       where: { id },
+      relations: ['user'],
     });
     if (!updatedInterval) {
       throw new NotFoundException(`Interval with ID ${id} not found`);

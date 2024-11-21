@@ -63,7 +63,6 @@ export class HomeController {
     if (!token) {
       return res.json({ message: 'No token found for logout', success: false });
     }
-    console.log(`Adding token to blacklist: ${token}`);
     tokenBlacklist.add(token);
     res.clearCookie('jwt', { httpOnly: true });
     if (process.env.NODE_ENV === 'test') {

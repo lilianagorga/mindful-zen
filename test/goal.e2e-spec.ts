@@ -37,6 +37,7 @@ describe('GoalController (e2e)', () => {
       .expect(201);
     createdUserId = userResponse.body.user?.id;
     expect(createdUserId).toBeDefined();
+    console.log('Created User ID:', createdUserId);
 
     const loginResponse = await request(app.getHttpServer())
       .post('/login')
@@ -100,6 +101,7 @@ describe('GoalController (e2e)', () => {
       .expect(201);
     createdIntervalId = intervalResponse.body.id;
     expect(createdIntervalId).toBeDefined();
+    console.log('Created Interval ID:', createdIntervalId);
 
     const goalData = {
       name: 'Test Goal',
@@ -113,6 +115,9 @@ describe('GoalController (e2e)', () => {
       .expect(201);
     createdGoalId = goalResponse.body.id;
     expect(createdGoalId).toBeDefined();
+
+    console.log('Created Goal ID:', createdGoalId);
+
     const getGoalsResponse = await request(app.getHttpServer())
       .get('/goals')
       .set('Authorization', `Bearer ${adminToken}`)
