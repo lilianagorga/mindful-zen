@@ -2,8 +2,12 @@
   <nav>
     <p>Welcome to Mindful Zen!</p>
     <% if (currentUser) { %>
-      <p>Welcome, <%= currentUser.name ? currentUser.name : 'User' %>!</p>
+      <p>Welcome, <%= currentUser.firstName && currentUser.lastName ? currentUser.firstName + ' ' + currentUser.lastName : 'User' %>!</p>
       <a href="/logout">Logout</a>
+      <a href="/profile">Profile</a>
+      <% if (currentUser.role === 'admin') { %>
+        <a href="/dashboard">Dashboard</a>
+      <% } %>
     <% } else { %>
       <a href="/login">Login</a>
       <a href="/register">Register</a>

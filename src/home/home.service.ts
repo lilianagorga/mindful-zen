@@ -50,7 +50,13 @@ export class HomeService {
       delete userWithoutPassword.password;
 
       const token = jwt.sign(
-        { id: savedUser.id, email: savedUser.email, role: savedUser.role },
+        {
+          id: savedUser.id,
+          email: savedUser.email,
+          role: savedUser.role,
+          firstName: savedUser.firstName,
+          lastName: savedUser.lastName,
+        },
         process.env.JWT_SECRET as string,
         { expiresIn: process.env.JWT_EXPIRES_IN },
       );
@@ -77,7 +83,13 @@ export class HomeService {
       throw new Error('Invalid email or password');
     }
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
       process.env.JWT_SECRET as string,
       { expiresIn: process.env.JWT_EXPIRES_IN },
     );

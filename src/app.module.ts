@@ -12,6 +12,9 @@ import { AccessControlModule } from 'nest-access-control';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { HomeModule } from './home/home.module';
+import { DashboardController } from './UI/dashboard.controller';
+import { ProfileController } from './UI/profile.controller';
+import { RolesGuard } from './roles/roles.guard';
 
 @Module({
   imports: [
@@ -29,11 +32,13 @@ import { HomeModule } from './home/home.module';
       },
     ]),
   ],
+  controllers: [DashboardController, ProfileController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    RolesGuard,
   ],
 })
 export class AppModule {}

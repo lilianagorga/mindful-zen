@@ -3,10 +3,12 @@ import { GoalService } from './goal.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Goal } from '../entities/goal.entity';
 import { NotFoundException } from '@nestjs/common';
+import { IntervalService } from '../interval/interval.service';
 
 describe('GoalService', () => {
   let goalService: GoalService;
   let mockGoalRepository: Record<string, jest.Mock>;
+  let mockIntervalService: Record<string, jest.Mock>;
 
   beforeEach(async () => {
     mockGoalRepository = {
@@ -18,12 +20,20 @@ describe('GoalService', () => {
       delete: jest.fn(),
     };
 
+    mockIntervalService = {
+      findById: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GoalService,
         {
           provide: getRepositoryToken(Goal),
           useValue: mockGoalRepository,
+        },
+        {
+          provide: IntervalService,
+          useValue: mockIntervalService,
         },
       ],
     }).compile();
@@ -50,17 +60,21 @@ describe('GoalService', () => {
     expect(result).toEqual(goal);
     expect(mockGoalRepository.findOne).toHaveBeenCalledWith({
       where: { id: 1 },
+      relations: ['interval'],
     });
   });
 
   it('should create a new goal', async () => {
     const goalData = { name: 'New Goal', intervalId: 1 };
+    const interval = { id: 1 };
     const createdGoal = { id: 1, ...goalData };
+    mockIntervalService.findById.mockResolvedValue(interval);
     mockGoalRepository.create.mockReturnValue(createdGoal);
     mockGoalRepository.save.mockResolvedValue(createdGoal);
 
     const result = await goalService.create(goalData);
     expect(result).toEqual(createdGoal);
+    expect(mockIntervalService.findById).toHaveBeenCalledWith(1);
     expect(mockGoalRepository.create).toHaveBeenCalledWith(goalData);
     expect(mockGoalRepository.save).toHaveBeenCalledWith(createdGoal);
   });

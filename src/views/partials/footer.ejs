@@ -6,12 +6,13 @@
       <% if (currentUser) { %>
         <a href="/profile">Profile</a>
         <a href="/logout">Logout</a>
+        <% if (currentUser.role === 'admin') { %>
+          <a href="/dashboard">Dashboard</a>
+        <% } %>
       <% } else { %>
         <a href="/login">Login</a>
         <a href="/register">Register</a>
       <% } %>
-      <a href="/about">About Us</a>
-      <a href="/contact">Contact</a>
     </nav>
   </div>
 </footer>

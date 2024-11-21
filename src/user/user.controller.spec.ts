@@ -22,9 +22,9 @@ const mockResponse = () => {
   return res as Response;
 };
 
-const mockRequest = () => {
+const mockRequest = (user: Partial<User> = {}) => {
   const req: Partial<Request> = {};
-  req.user = null;
+  req.user = user;
   return req as Request;
 };
 
@@ -63,6 +63,7 @@ describe('UserController', () => {
 
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
+    jest.spyOn(userService, 'findById').mockResolvedValue(mockUser as User);
   });
 
   it('should return all users', async () => {
@@ -83,13 +84,21 @@ describe('UserController', () => {
     const updateUserDto = { firstName: 'Updated' };
     const updatedUser = { ...mockUser, ...updateUserDto };
     jest.spyOn(userService, 'update').mockResolvedValue(updatedUser as User);
-    expect(await userController.updateUser('1', updateUserDto)).toBe(
-      updatedUser,
-    );
+
+    const req = mockRequest(mockUser);
+    const res = mockResponse();
+    await userController.updateUser('1', updateUserDto, req, res);
+    expect(res.json).toHaveBeenCalledWith(updatedUser);
   });
 
   it('should delete a user', async () => {
     jest.spyOn(userService, 'delete').mockResolvedValue();
-    await expect(userController.deleteUser('1')).resolves.toBeUndefined();
+
+    const req = mockRequest(mockUser);
+    const res = mockResponse();
+    await userController.deleteUser('1', req, res);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'User deleted successfully',
+    });
   });
 });

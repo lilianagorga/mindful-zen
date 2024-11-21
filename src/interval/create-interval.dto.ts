@@ -10,5 +10,5 @@ export class CreateIntervalDto {
   endDate: string;
 
   @IsNotEmpty()
-  userId: number;
+  userId?: number;
 }

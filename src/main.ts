@@ -20,7 +20,7 @@ async function bootstrap() {
         const payload = jwt.verify(token, process.env.JWT_SECRET as string);
         req.user = payload;
       } catch (err) {
-        console.error('Errore nel decodificare il token:', err.message);
+        console.error('Error codifying token:', err.message);
       }
     }
     next();
@@ -29,7 +29,10 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'src', 'views'));
   app.setViewEngine('ejs');
-  if (process.env.NODE_ENV === 'test') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+  ) {
     app.useLogger(['log', 'error', 'warn', 'debug']);
   }
   await app.listen(process.env.PORT ?? 3000);
