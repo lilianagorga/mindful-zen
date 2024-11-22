@@ -21,17 +21,15 @@ export class HomeController {
   @Get()
   @Throttle({ default: { limit: 15, ttl: 60000 } })
   getHomePage(@Res() res?: Response, @Req() req?: Request) {
-    const message = this.homeService.getWelcomeMessage();
-    if (process.env.NODE_ENV === 'test') {
-      return res?.json({ message });
-    }
     const isApiRequest =
       res?.req?.headers?.['accept']?.includes('application/json');
+
     if (isApiRequest) {
-      return res?.json({ message });
+      return res?.json({ message: this.homeService.getWelcomeMessage() });
     }
+
     const currentUser = req?.user ?? null;
-    return res?.render('index', { message, currentUser });
+    return res?.render('index', { currentUser });
   }
 
   @Get('register')

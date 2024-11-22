@@ -33,7 +33,6 @@ describe('HomeController (e2e)', () => {
     createdAdminId = adminRegisterResponse.body.user?.id;
     expect(createdAdminId).toBeDefined();
 
-    // Register a user for testing
     const userRegisterResponse = await request(app.getHttpServer())
       .post('/register')
       .send({

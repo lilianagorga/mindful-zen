@@ -1,18 +1,18 @@
-<footer>
-  <div>
-    <p>&copy; <%= new Date().getFullYear() %> Mindful Zen. All rights reserved.</p>
-    <nav>
-      <a href="/">Home</a>
+<footer class="footer">
+  <div class="footer-content">
+    <p href="/" class="footer-text">&copy; <%= new Date().getFullYear() %> Mindful Zen. All rights reserved.</p>
+    <ul class="footer-links">
       <% if (currentUser) { %>
-        <a href="/profile">Profile</a>
-        <a href="/logout">Logout</a>
+        <li class="footer-item"><a href="/"><i class="fas fa-home"></i><span>Home</span></a></li>
+        <li class="footer-item"><a href="/logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        <li class="footer-item"><a href="/profile"><i class="fas fa-user"></i><span>Profile</span></a></li>
         <% if (currentUser.role === 'admin') { %>
-          <a href="/dashboard">Dashboard</a>
+          <li class="footer-item"><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
         <% } %>
       <% } else { %>
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
+        <li class="navbar-item"><a href="/login"><i class="fa-solid fa-right-to-bracket"></i><span>Login</span></a></li>
+        <li class="navbar-item"><a href="/register"><i class="fa-solid fa-user-plus"></i><span>Register</span></a></li>
       <% } %>
-    </nav>
+    </ul>
   </div>
 </footer>

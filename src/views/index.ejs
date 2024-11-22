@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+  <%- include('partials/head') %>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,44 @@
 <body>
   <%- include('partials/header') %>
   <main>
-    <h1><%= message %></h1>
+    <section class="hero">
+      <div>
+        <img src="/img/hero.jpg" alt="Mindful Zen Hero" class="hero-img">
+        <p>
+          Your journey towards mindfulness and better lifestyle starts here. 
+          Explore tools, set goals and achieve personal growth like never before.
+        </p>
+        <p>Mindful Zen helps you take control of your daily habits with powerful features designed to bring balance and clarity to your life.</p>
+        <p>From customizable goals to a vibrant community of like-minded individuals, Mindful Zen is your partner in a transformative journey.</p>
+      </div>
+    </section>
+
+    <section class="features">
+      <h2>Why Choose Mindful Zen?</h2>
+      <div class="feature-list">
+        <div class="feature-item card-style">
+          <img src="/img/feature-goals.jpg" alt="Customizable Goals" />
+          <h3>Customizable Goals</h3>
+          <p>Set and track personalized goals to improve your daily habits.</p>
+        </div>
+        <div class="feature-item card-style">
+          <img src="/img/feature-focus.jpg" alt="Focus on Lifestyle" />
+          <h3>Focus on Lifestyle</h3>
+          <p>Build healthier routines with tailored tools designed to help you achieve your personal growth.</p>
+        </div>
+        <div class="feature-item card-style">
+          <img src="/img/feature-support.jpg" alt="Community Support" />
+          <h3>Community Support</h3>
+          <p>Join a supportive community to share experiences, get advice, and celebrate your progress.</p>
+        </div>
+      </div>
+    </section>
+    <section class="cta card-style">
+      <h2>Ready to Start?</h2>
+      <p>Sign up today and take the first step towards a more mindful life. Join Mindful Zen and start making meaningful changes!</p>
+      <a href="/register" class="btn">Get Started</a>
+    </section>
+  </main>
   </main>
   <%- include('partials/footer') %>
 </body>

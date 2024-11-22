@@ -1,16 +1,19 @@
 <header>
-  <nav>
-    <p>Welcome to Mindful Zen!</p>
-    <% if (currentUser) { %>
-      <p>Welcome, <%= currentUser.firstName && currentUser.lastName ? currentUser.firstName + ' ' + currentUser.lastName : 'User' %>!</p>
-      <a href="/logout">Logout</a>
-      <a href="/profile">Profile</a>
-      <% if (currentUser.role === 'admin') { %>
-        <a href="/dashboard">Dashboard</a>
+  <nav class="navbar">
+    <a href="/" class="navbar-brand">Mindful Zen</a>
+    <ul class="navbar-links">
+      <% if (currentUser) { %>
+        <li class="navbar-item">Welcome, <%= currentUser.firstName && currentUser.lastName ? currentUser.firstName + ' ' + currentUser.lastName : 'User' %>!</li>
+        <li class="navbar-item"><a href="/"><i class="fas fa-home"></i><span>Home</span></a></li>
+        <li class="navbar-item"><a href="/logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        <li class="navbar-item"><a href="/profile"><i class="fas fa-user"></i><span>Profile</span></a></li>
+        <% if (currentUser.role === 'admin') { %>
+          <li class="navbar-item"><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+        <% } %>
+      <% } else { %>
+        <li class="navbar-item"><a href="/login"><i class="fa-solid fa-right-to-bracket"></i><span>Login</span></a></li>
+        <li class="navbar-item"><a href="/register"><i class="fa-solid fa-user-plus"></i><span>Register</span></a></li>
       <% } %>
-    <% } else { %>
-      <a href="/login">Login</a>
-      <a href="/register">Register</a>
-    <% } %>
+    </ul>
   </nav>
 </header>
