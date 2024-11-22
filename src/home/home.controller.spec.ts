@@ -59,9 +59,18 @@ describe('HomeController', () => {
       .spyOn(homeService, 'getWelcomeMessage')
       .mockImplementation(() => result);
 
-    const res = mockResponse();
+    const res = {
+      json: jest.fn(),
+      req: {
+        headers: {
+          accept: 'application/json',
+        },
+      },
+    };
     const req = mockRequest();
-    homeController.getHomePage(res, req);
+
+    homeController.getHomePage(res as any, req as any);
+
     expect(res.json).toHaveBeenCalledWith({ message: result });
   });
 

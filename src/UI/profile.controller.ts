@@ -206,12 +206,10 @@ export class ProfileController {
     if (!interval || interval.userId !== currentUser.id) {
       throw new ForbiddenException('Access denied or interval not found');
     }
-
     const goalData = {
       name,
       intervalId,
     };
-
     const newGoal = await this.goalService.create(goalData);
     return res.status(201).json(newGoal);
   }
