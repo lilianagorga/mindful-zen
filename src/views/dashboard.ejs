@@ -73,11 +73,10 @@
       <ul>
         <% goals.forEach(goal => { %>
           <li>
-            <strong>Name:</strong> <%= goal.name %> 
-            <strong>Interval:</strong> <%= goal.interval.name || 'N/A' %> 
-            <strong>Created by:</strong>
-            <% if (goal.interval && goal.interval.user) { %>
-              <%= goal.interval.user.firstName %> <%= goal.interval.user.lastName %> (<%= goal.interval.user.email %>)
+            <strong>Name:</strong> <%= goal.name %>
+            <strong>Interval:</strong>
+            <% if (goal.interval) { %>
+              <%= goal.interval.name || `Interval ${goal.interval.id}` %>
             <% } else { %>
               N/A
             <% } %>
