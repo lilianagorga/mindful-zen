@@ -18,14 +18,14 @@
           <li>
             <%= user.email %> - <%= user.firstName %> <%= user.lastName %>
             <button data-user-id="<%= user.id %>" class="delete-user-btn">Delete User</button>
-            <form class="update-user-form" data-user-id="<%= user.id %>" style="display: none;">
+            <form class="dashboard-form update-user-form" data-user-id="<%= user.id %>" style="display: none;">
               <input type="text" name="firstName" placeholder="First Name" value="<%= user.firstName %>" required>
               <input type="text" name="lastName" placeholder="Last Name" value="<%= user.lastName %>" required>
               <input type="email" name="email" placeholder="Email" value="<%= user.email %>" required>
               <input type="password" name="password" placeholder="New Password">
               <button type="submit">Update User</button>
             </form>
-            <button class="show-update-form-btn">Edit User</button>
+            <button data-user-id="<%= user.id %>" data-type="user" class="show-update-form-btn">Edit User</button>
             <span class="error-message" data-user-id="<%= user.id %>" style="color: red; display: none;"></span>
             <span class="success-message" data-user-id="<%= user.id %>" style="color: green; display: none;"></span>
           </li>
@@ -42,12 +42,12 @@
             <strong>End:</strong> <%= interval.endDate %> 
             <strong>Created by:</strong> <%= interval.user.firstName %> <%= interval.user.lastName %> (<%= interval.user.email %>)
             <button data-interval-id="<%= interval.id %>" class="delete-interval-btn">Delete Interval</button>
-            <form class="update-interval-form" data-interval-id="<%= interval.id %>" style="display: none;">
+            <form class="dashboard-form update-interval-form" data-interval-id="<%= interval.id %>" style="display: none;">
               <input type="datetime-local" name="startDate" value="<%= new Date(interval.startDate).toISOString().slice(0,16) %>" required>
               <input type="datetime-local" name="endDate" value="<%= new Date(interval.endDate).toISOString().slice(0,16) %>" required>
               <button type="submit">Update Interval</button>
             </form>
-            <button class="show-update-form-btn">Edit Interval</button>
+            <button data-interval-id="<%= interval.id %>" data-type="interval" class="show-update-form-btn">Edit Interval</button>
             <span class="error-message" data-interval-id="<%= interval.id %>" style="color: red; display: none;"></span>
             <span class="success-message" data-interval-id="<%= interval.id %>" style="color: green; display: none;"></span>
           </li>
@@ -87,7 +87,7 @@
               N/A
             <% } %>
             <button data-goal-id="<%= goal.id %>" class="delete-goal-btn">Delete Goal</button>
-            <form class="update-goal-form" data-goal-id="<%= goal.id %>" style="display: none;">
+            <form class="dashboard-form update-goal-form" data-goal-id="<%= goal.id %>" style="display: none;">
               <input type="text" name="name" value="<%= goal.name %>" required>
               <select name="intervalId">
                 <% intervals.forEach(interval => { %>
@@ -98,7 +98,7 @@
               </select>
               <button type="submit">Update Goal</button>
             </form>
-            <button class="show-update-goal-form-btn">Edit Goal</button>
+            <button data-goal-id="<%= goal.id %>" data-type="goal" class="show-update-form-btn">Edit Goal</button>
             <span class="error-message" data-goal-id="<%= goal.id %>" style="color: red; display: none;"></span>
             <span class="success-message" data-goal-id="<%= goal.id %>" style="color: green; display: none;"></span>
           </li>
@@ -141,72 +141,137 @@
         element.textContent = '';
       }, 5000);
     }
-    document.addEventListener('DOMContentLoaded', function() {
-      const deleteUserButtons = document.querySelectorAll('.delete-user-btn');
-      deleteUserButtons.forEach(button => {
-        button.addEventListener('click', async function() {
-          const userId = this.getAttribute('data-user-id');
-          const errorMessageElement = document.querySelector(`.error-message[data-user-id="${userId}"]`);
-          const successMessageElement = document.querySelector(`.success-message[data-user-id="${userId}"]`);
-          if (!errorMessageElement) {
-            console.warn(`Error message element not found for user ID ${userId}`);
-            return;
-          }
-          try {
-            const response = await fetch(`/dashboard/${userId}`, {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' }
-            });
-            
-            if (response.ok) {
-              showSuccessMessage(successMessageElement, 'User deleted successfully');
-              setTimeout(() => location.reload(), 1000);
-            } else {
-              console.error(`Failed request: ${response.status} - ${response.statusText}`);
-              showErrorMessage(errorMessageElement, 'Failed to delete user');
-            }
-          } catch (error) {
-            console.error(error);
-            showErrorMessage(errorMessageElement, 'An unexpected error occurred');
-          }
-        });
+    function getAssociatedForm(button) {
+      const type = button.getAttribute('data-type');
+
+      if (type === 'user') {
+        const userId = button.getAttribute('data-user-id');
+        return document.querySelector(`.update-user-form[data-user-id="${userId}"]`);
+      } else if (type === 'interval') {
+        const intervalId = button.getAttribute('data-interval-id');
+        return document.querySelector(`.update-interval-form[data-interval-id="${intervalId}"]`);
+      } else if (type === 'goal') {
+        const goalId = button.getAttribute('data-goal-id');
+        return document.querySelector(`.update-goal-form[data-goal-id="${goalId}"]`);
+      }
+
+      console.warn('No form found for this button.');
+      return null;
+    }
+    function showLoading(message = "Loading...") {
+      const loadingOverlay = document.getElementById('loading-overlay');
+      loadingOverlay.textContent = message;
+      loadingOverlay.style.display = 'flex';
+    }
+    function hideLoading(delay = 2000) {
+      const loadingOverlay = document.getElementById('loading-overlay');
+      setTimeout(() => {
+        loadingOverlay.style.display = 'none';
+      }, delay);
+    }
+    function disableUI() {
+      document.querySelectorAll('button, input, select').forEach(element => {
+        element.disabled = true;
       });
-
-      const updateUserForms = document.querySelectorAll('.update-user-form');
-      updateUserForms.forEach(form => {
-        form.addEventListener('submit', async function(event) {
-          event.preventDefault();
-          const userId = this.getAttribute('data-user-id');
-          const errorMessageElement = document.querySelector(`.error-message[data-user-id="${userId}"]`);
-          const successMessageElement = document.querySelector(`.success-message[data-user-id="${userId}"]`);
-          if (!errorMessageElement) {
-            console.warn(`Error message element not found for user ID ${userId}`);
-            return;
-          }
-          const formData = Object.fromEntries(new FormData(this));
-
-          try {
-            const response = await fetch(`/dashboard/${userId}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(formData)
-            });
-
-            if (response.ok) {
-              showSuccessMessage(successMessageElement, 'User updated successfully');
-              setTimeout(() => location.reload(), 1000);
-            } else {
-              console.error(`Failed request: ${response.status} - ${response.statusText}`);
-              showErrorMessage(errorMessageElement, 'Failed to update user');
-            }
-          } catch (error) {
-            console.error(error);
-            showErrorMessage(errorMessageElement, 'An unexpected error occurred');
-          }
-        });
+    }
+    function enableUI() {
+      document.querySelectorAll('button, input, select').forEach(element => {
+        element.disabled = false;
       });
+    }
+      document.addEventListener('DOMContentLoaded', function() {
+        hideLoading();
+        const deleteUserButtons = document.querySelectorAll('.delete-user-btn');
+        deleteUserButtons.forEach(button => {
+          button.addEventListener('click', async function() {
+            const userId = this.getAttribute('data-user-id');
+            const errorMessageElement = document.querySelector(`.error-message[data-user-id="${userId}"]`);
+            const successMessageElement = document.querySelector(`.success-message[data-user-id="${userId}"]`);
+            if (!errorMessageElement) {
+              console.warn(`Error message element not found for user ID ${userId}`);
+              return;
+            }
+            try {
+              showLoading("Deleting User...");
+              disableUI()
+              const response = await fetch(`/dashboard/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+              });
+              
+              if (response.ok) {
+                showSuccessMessage(successMessageElement, 'User deleted successfully');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                console.error(`Failed request: ${response.status} - ${response.statusText}`);
+                showErrorMessage(errorMessageElement, 'Failed to delete user');
+              }
+            } catch (error) {
+              console.error(error);
+              showErrorMessage(errorMessageElement, 'An unexpected error occurred');
+            } finally {
+              hideLoading();
+              enableUI()
+            }
+          });
+        });
+        const updateUserForms = document.querySelectorAll('.update-user-form');
+        updateUserForms.forEach(form => {
+          form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const userId = this.getAttribute('data-user-id');
+            const errorMessageElement = document.querySelector(`.error-message[data-user-id="${userId}"]`);
+            const successMessageElement = document.querySelector(`.success-message[data-user-id="${userId}"]`);
+            if (!errorMessageElement) {
+              console.warn(`Error message element not found for user ID ${userId}`);
+              return;
+            }
+            const formData = Object.fromEntries(new FormData(this));
 
-      document.getElementById('create-interval-form').addEventListener('submit', async function(event) {
+            try {
+              showLoading("Updating User...");
+              disableUI()
+              const response = await fetch(`/dashboard/${userId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+              });
+
+              if (response.ok) {
+                showSuccessMessage(successMessageElement, 'User updated successfully');
+                setTimeout(() => location.reload(), 1000);
+              } else {
+                console.error(`Failed request: ${response.status} - ${response.statusText}`);
+                showErrorMessage(errorMessageElement, 'Failed to update user');
+              }
+            } catch (error) {
+              console.error(error);
+              showErrorMessage(errorMessageElement, 'An unexpected error occurred');
+            } finally {
+              hideLoading();
+              enableUI()
+            }
+          });
+        });
+        const showUpdateFormButtons = document.querySelectorAll('.show-update-form-btn');
+          showUpdateFormButtons.forEach(button => {
+            button.addEventListener('click', function () {
+              const form = getAssociatedForm(button);
+              if (!form) return;
+
+              document.querySelectorAll('.update-user-form, .update-interval-form, .update-goal-form').forEach(otherForm => {
+                otherForm.classList.remove('visible');
+              });
+              document.querySelectorAll('.show-update-form-btn').forEach(otherButton => {
+                otherButton.style.display = 'inline';
+              });
+              const isVisible = form.classList.toggle('visible');
+              button.style.display = isVisible ? 'none' : 'inline';
+          });
+        });
+
+        const createIntervalForm = document.getElementById('create-interval-form');
+        createIntervalForm.addEventListener('submit', async function (event) {
         event.preventDefault();
         const formData = Object.fromEntries(new FormData(this));
         const errorMessageElement = document.querySelector('#create-interval-error');
@@ -216,6 +281,8 @@
           return;
         }
         try {
+          showLoading("Creating Interval...");
+          disableUI()
           const response = await fetch('/dashboard/intervals', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -231,182 +298,212 @@
         } catch (error) {
           console.error(error);
           showErrorMessage(errorMessageElement, 'An unexpected error occurred');
+        } finally {
+          hideLoading();
+          enableUI()
         }
       });
-
-      const deleteIntervalButtons = document.querySelectorAll('.delete-interval-btn');
-      deleteIntervalButtons.forEach(button => {
-        button.addEventListener('click', async function() {
-          const intervalId = this.getAttribute('data-interval-id');
-          const errorMessageElement = document.querySelector(`.error-message[data-interval-id="${intervalId}"]`);
-          const successMessageElement = document.querySelector(`.success-message[data-interval-id="${intervalId}"]`);
-          if (!errorMessageElement) {
-          console.warn(`Error message element not found for user ID ${intervalId}`);
-          return;
-          }
-
-          try {
-            const response = await fetch(`/dashboard/intervals/${intervalId}`, {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-            });
-
-            if (response.ok) {
-              showSuccessMessage(successMessageElement, 'Interval deleted successfully');
-              setTimeout(() => location.reload(), 1000);
-            } else {
-              showErrorMessage(errorMessageElement, 'Failed to delete interval');
+        const deleteIntervalButtons = document.querySelectorAll('.delete-interval-btn');
+        deleteIntervalButtons.forEach(button => {
+          button.addEventListener('click', async function() {
+            const intervalId = this.getAttribute('data-interval-id');
+            const errorMessageElement = document.querySelector(`.error-message[data-interval-id="${intervalId}"]`);
+            const successMessageElement = document.querySelector(`.success-message[data-interval-id="${intervalId}"]`);
+            if (!errorMessageElement) {
+            console.warn(`Error message element not found for user ID ${intervalId}`);
+            return;
             }
-          } catch (error) {
-            console.error(error);
-            showErrorMessage(errorMessageElement, 'An unexpected error occurred');
-          }
-        });
-      });
 
-      const updateIntervalForms = document.querySelectorAll('.update-interval-form');
-      updateIntervalForms.forEach(form => {
-        form.addEventListener('submit', async function(event) {
+            try {
+              showLoading("Deleting Interval...");
+              disableUI()
+              const response = await fetch(`/dashboard/intervals/${intervalId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+              });
+
+              if (response.ok) {
+                showSuccessMessage(successMessageElement, 'Interval deleted successfully');
+                setTimeout(() => location.reload(), 1000);
+              } else {
+                showErrorMessage(errorMessageElement, 'Failed to delete interval');
+              }
+            } catch (error) {
+              console.error(error);
+              showErrorMessage(errorMessageElement, 'An unexpected error occurred');
+            } finally {
+              hideLoading();
+              enableUI()
+            }
+          });
+        });
+        const updateIntervalForms = document.querySelectorAll('.update-interval-form');
+        updateIntervalForms.forEach(form => {
+          form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const intervalId = this.getAttribute('data-interval-id');
+            const errorMessageElement = document.querySelector(`.error-message[data-interval-id="${intervalId}"]`);
+            const successMessageElement = document.querySelector(`.success-message[data-interval-id="${intervalId}"]`);
+            if (!errorMessageElement) {
+            console.warn(`Error message element not found for user ID ${intervalId}`);
+            return;
+            }
+            const formData = Object.fromEntries(new FormData(this));
+
+            try {
+              showLoading("Updating Interval...");
+              disableUI()
+              const response = await fetch(`/dashboard/intervals/${intervalId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+              });
+
+              if (response.ok) {
+                showSuccessMessage(successMessageElement, 'Interval updated successfully');
+                setTimeout(() => location.reload(), 1000);
+              } else {
+                showErrorMessage(errorMessageElement, 'Failed to update interval');
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              showErrorMessage(errorMessageElement, 'An unexpected error occurred');
+            } finally {
+              hideLoading();
+              enableUI()
+            }
+          });
+        });
+        const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
+        deleteGoalButtons.forEach(button => {
+          button.addEventListener('click', async function () {
+            const goalId = this.getAttribute('data-goal-id');
+            const errorMessageElement = document.querySelector(`.error-message[data-goal-id="${goalId}"]`);
+            const successMessageElement = document.querySelector(`.success-message[data-goal-id="${goalId}"]`);
+            if (!errorMessageElement) {
+              console.warn(`Error message element not found for goal ID ${goalId}`);
+              return;
+            }
+
+            try {
+              showLoading("Deleting Goal...");
+              disableUI()
+              const response = await fetch(`/dashboard/goals/${goalId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+              });
+
+              if (response.ok) {
+                showSuccessMessage(successMessageElement, 'Goal deleted successfully');
+                setTimeout(() => location.reload(), 1000);
+              } else {
+                showErrorMessage(errorMessageElement, 'Failed to delete goal');
+              }
+            } catch (error) {
+              console.error(error);
+              showErrorMessage(errorMessageElement, 'An unexpected error occurred');
+            } finally {
+              hideLoading();
+              enableUI()
+            }
+          });
+        });
+        const updateGoalForms = document.querySelectorAll('.update-goal-form');
+        updateGoalForms.forEach(form => {
+          form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const goalId = this.getAttribute('data-goal-id');
+            const errorMessageElement = document.querySelector(`.error-message[data-goal-id="${goalId}"]`);
+            const successMessageElement = document.querySelector(`.success-message[data-goal-id="${goalId}"]`);
+            if (!errorMessageElement) {
+              console.warn(`Error message element not found for goal ID ${goalId}`);
+              return;
+            }
+          const formData = Object.fromEntries(new FormData(this));
+
+            try {
+              showLoading("Updating Goal...");
+              disableUI()
+              const response = await fetch(`/dashboard/goals/${goalId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+              });
+
+              if (response.ok) {
+                showSuccessMessage(successMessageElement, 'Goal updated successfully');
+                setTimeout(() => location.reload(), 1000);
+              } else {
+                showErrorMessage(errorMessageElement, 'Failed to update goal');
+              }
+            } catch (error) {
+              console.error(error);
+              showErrorMessage(errorMessageElement, 'An unexpected error occurred');
+            } finally {
+              hideLoading();
+              enableUI()
+            }
+          });
+        });
+        const createGoalForm = document.getElementById('create-goal-form');
+        createGoalForm.addEventListener('submit', async function (event) {
           event.preventDefault();
-          const intervalId = this.getAttribute('data-interval-id');
-          const errorMessageElement = document.querySelector(`.error-message[data-interval-id="${intervalId}"]`);
-          const successMessageElement = document.querySelector(`.success-message[data-interval-id="${intervalId}"]`);
+          const errorMessageElement = document.querySelector('#create-goal-error');
+          const successMessageElement = document.querySelector('#create-goal-success');
           if (!errorMessageElement) {
-          console.warn(`Error message element not found for user ID ${intervalId}`);
-          return;
+            console.warn('Error message element for creating goal not found');
+            return;
           }
           const formData = Object.fromEntries(new FormData(this));
 
           try {
-            const response = await fetch(`/dashboard/intervals/${intervalId}`, {
-              method: 'PUT',
+            showLoading("Creating Goal...");
+            disableUI()
+            const response = await fetch('/dashboard/goals', {
+              method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(formData)
+              body: JSON.stringify(formData),
             });
 
-            if (response.ok) {
-              showSuccessMessage(successMessageElement, 'Interval updated successfully');
-              setTimeout(() => location.reload(), 1000);
-            } else {
-              showErrorMessage(errorMessageElement, 'Failed to update interval');
+            
+          if (response.ok) {
+            showSuccessMessage(successMessageElement, 'Goal created successfully');
+            setTimeout(() => location.reload(), 1000);
+          } else {
+              showErrorMessage(errorMessageElement, 'Failed to create goal');
             }
           } catch (error) {
-            console.error('Error:', error);
+            console.error(error);
             showErrorMessage(errorMessageElement, 'An unexpected error occurred');
+          } finally {
+            hideLoading();
+            enableUI()
           }
         });
-      });
+      document.querySelectorAll('.dashboard-form').forEach(form => {
+        form.addEventListener('submit', function (event) {
+          const inputs = form.querySelectorAll('[required]');
+          let allValid = true;
 
-      const showUpdateFormButtons = document.querySelectorAll('.show-update-form-btn');
-      showUpdateFormButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const form = this.previousElementSibling;
-          form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        });
-      });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-    const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
-    deleteGoalButtons.forEach(button => {
-      button.addEventListener('click', async function () {
-        const goalId = this.getAttribute('data-goal-id');
-        const errorMessageElement = document.querySelector(`.error-message[data-goal-id="${goalId}"]`);
-        const successMessageElement = document.querySelector(`.success-message[data-goal-id="${goalId}"]`);
-        if (!errorMessageElement) {
-          console.warn(`Error message element not found for goal ID ${goalId}`);
-          return;
-        }
-
-        try {
-          const response = await fetch(`/dashboard/goals/${goalId}`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
+          inputs.forEach(input => {
+            if (!input.value.trim()) {
+              allValid = false;
+              input.classList.add('dashboard-error');
+              setTimeout(() => input.classList.remove('dashboard-error'), 3000);
+            }
           });
 
-          if (response.ok) {
-            showSuccessMessage(successMessageElement, 'Goal deleted successfully');
-            setTimeout(() => location.reload(), 1000);
-          } else {
-            showErrorMessage(errorMessageElement, 'Failed to delete goal');
+          if (!allValid) {
+            event.preventDefault();
+            alert('Please fill in all required fields.');
           }
-        } catch (error) {
-          console.error(error);
-          showErrorMessage(errorMessageElement, 'An unexpected error occurred');
-        }
-      });
-    });
-    const updateGoalForms = document.querySelectorAll('.update-goal-form');
-    updateGoalForms.forEach(form => {
-      form.addEventListener('submit', async function (event) {
-        event.preventDefault();
-        const goalId = this.getAttribute('data-goal-id');
-        const errorMessageElement = document.querySelector(`.error-message[data-goal-id="${goalId}"]`);
-        const successMessageElement = document.querySelector(`.success-message[data-goal-id="${goalId}"]`);
-        if (!errorMessageElement) {
-          console.warn(`Error message element not found for goal ID ${goalId}`);
-          return;
-        }
-      const formData = Object.fromEntries(new FormData(this));
-
-        try {
-          const response = await fetch(`/dashboard/goals/${goalId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData),
-          });
-
-          if (response.ok) {
-            showSuccessMessage(successMessageElement, 'Goal updated successfully');
-            setTimeout(() => location.reload(), 1000);
-          } else {
-            showErrorMessage(errorMessageElement, 'Failed to update goal');
-          }
-        } catch (error) {
-          console.error(error);
-          showErrorMessage(errorMessageElement, 'An unexpected error occurred');
-        }
-      });
-    });
-    const createGoalForm = document.getElementById('create-goal-form');
-    createGoalForm.addEventListener('submit', async function (event) {
-      event.preventDefault();
-      const errorMessageElement = document.querySelector('#create-goal-error');
-      const successMessageElement = document.querySelector('#create-goal-success');
-      if (!errorMessageElement) {
-        console.warn('Error message element for creating goal not found');
-        return;
-      }
-      const formData = Object.fromEntries(new FormData(this));
-
-      try {
-        const response = await fetch('/dashboard/goals', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
         });
-
-        
-      if (response.ok) {
-        showSuccessMessage(successMessageElement, 'Goal created successfully');
-        setTimeout(() => location.reload(), 1000);
-      } else {
-          showErrorMessage(errorMessageElement, 'Failed to create goal');
-        }
-      } catch (error) {
-        console.error(error);
-        showErrorMessage(errorMessageElement, 'An unexpected error occurred');
-      }
-    });
-    const showUpdateFormButtons = document.querySelectorAll('.show-update-goal-form-btn');
-    showUpdateFormButtons.forEach(button => {
-      button.addEventListener('click', function () {
-        const form = this.previousElementSibling;
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
       });
     });
-  });
   </script>
   <%- include('partials/footer') %>
+  <div id="loading-overlay">
+    Loading...
+  </div>
 </body>
 </html>
