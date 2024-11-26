@@ -129,9 +129,7 @@ export class ProfileController {
     @Res() res: Response,
   ) {
     const interval = await this.intervalService.findById(parseInt(id, 10));
-    console.log('Interval fetched from profile:', interval);
     if (!interval) {
-      console.log('Interval not found from profile');
       throw new ForbiddenException('Interval not found');
     }
     if (interval.userId !== req.user.id) {
@@ -142,7 +140,6 @@ export class ProfileController {
       parseInt(id, 10),
       updateIntervalDto,
     );
-    console.log('Updated Interval from profile:', updatedInterval);
     return res.json(updatedInterval);
   }
 
