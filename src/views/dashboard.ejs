@@ -419,7 +419,7 @@
               console.warn(`Error message element not found for goal ID ${goalId}`);
               return;
             }
-          const formData = Object.fromEntries(new FormData(this));
+            const formData = Object.fromEntries(new FormData(this));
 
             try {
               showLoading("Updating Goal...");
@@ -480,26 +480,26 @@
             enableUI()
           }
         });
-      document.querySelectorAll('.dashboard-form').forEach(form => {
-        form.addEventListener('submit', function (event) {
-          const inputs = form.querySelectorAll('[required]');
-          let allValid = true;
+        document.querySelectorAll('.dashboard-form').forEach(form => {
+          form.addEventListener('submit', function (event) {
+            const inputs = form.querySelectorAll('[required]');
+            let allValid = true;
 
-          inputs.forEach(input => {
-            if (!input.value.trim()) {
-              allValid = false;
-              input.classList.add('dashboard-error');
-              setTimeout(() => input.classList.remove('dashboard-error'), 3000);
+            inputs.forEach(input => {
+              if (!input.value.trim()) {
+                allValid = false;
+                input.classList.add('dashboard-error');
+                setTimeout(() => input.classList.remove('dashboard-error'), 3000);
+              }
+            });
+
+            if (!allValid) {
+              event.preventDefault();
+              alert('Please fill in all required fields.');
             }
           });
-
-          if (!allValid) {
-            event.preventDefault();
-            alert('Please fill in all required fields.');
-          }
         });
       });
-    });
   </script>
   <%- include('partials/footer') %>
   <div id="loading-overlay">

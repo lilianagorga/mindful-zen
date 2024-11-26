@@ -290,11 +290,11 @@ body {
   border-color: #6a71be;
 }
 
-.dashboard-form {
+.dashboard-form, .profile-form {
   display: none;
 }
 
-.dashboard-form.visible {
+.dashboard-form.visible, .profile-form.visible {
   display: block !important;
 }
 
@@ -303,7 +303,12 @@ form.dashboard-form input.dashboard-error {
   background-color: #ffe6e6;
 }
 
-#loading-overlay {
+form.profile-form input.profile-error {
+  border: 2px solid red;
+  background-color: #ffe6e6;
+}
+
+#loading-overlay, #loading-profile-overlay {
   display: none;
   position: fixed;
   top: 0;
