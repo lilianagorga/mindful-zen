@@ -290,12 +290,61 @@ body {
   border-color: #6a71be;
 }
 
-.dashboard-form, .profile-form {
+.dashboard-main, .profile-main {
+  max-width: 850px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-form, .profile-form, .error-message, .success-message {
   display: none;
 }
 
 .dashboard-form.visible, .profile-form.visible {
   display: block !important;
+}
+
+.dashboard-form, .profile-form {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.dashboard-form input,
+.dashboard-form select,
+.profile-form input,
+.profile-form select {
+  width: calc(100% - 20px);
+  margin: 5px 0 15px;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: block;
+}
+
+.dashboard-form button, .profile-form button {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #6a71be;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.dashboard-form button:hover,
+.profile-form button:hover {
+  background-color: #5c639d;
+  transform: translateY(-2px);
 }
 
 form.dashboard-form input.dashboard-error {
@@ -323,4 +372,269 @@ form.profile-form input.profile-error {
   z-index: 1000;
   justify-content: center;
   align-items: center;
+}
+
+.dashboard-section, .profile-section {
+  margin-bottom: 20px;
+}
+
+.dashboard-section h2, .profile-section h2 {
+  font-size: 20px;
+  color: #4a581c;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #6a71be;
+  padding-bottom: 5px;
+  margin-top: 20px;
+}
+
+.dashboard-list, .profile-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-list li, .profile-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  background-color: #fff;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.dashboard-list li:hover, .profile-list li:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+.dashboard-list strong, 
+.dashboard-list li .content-wrapper-goals strong,
+.profile-list strong,
+.profile-list li .content-wrapper-goals-profile strong {
+  display: inline-block;
+  width: 100px;
+  color: #333;
+  margin-right: 10px;
+}
+
+.dashboard-list li .content-wrapper-goals,
+.profile-list li .content-wrapper-goals-profile {
+  display: flex;
+  flex-direction: column;
+  gap:5px;
+  margin-right: 15px;
+}
+
+.dashboard-list li .content-wrapper-goals span,
+.profile-list li .content-wrapper-goals-profile span {
+  display: inline-block;
+  margin-left: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-list button,
+.profile-list button {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #6a71be;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+  align-self: center;
+  margin: 5px;
+}
+
+.dashboard-list li .content-wrapper-users {
+  flex: 1;
+  margin-right: 15px;
+}
+
+.dashboard-list li .button-wrapper,
+.profile-list li .button-wrapper-profile {
+  display: flex;
+  gap: 10px;
+}
+
+.users-section .button-wrapper button,
+.goals-section .button-wrapper button,
+.goals-profile-section .button-wrapper-profile button {
+  min-width: 90px;
+  text-align: center;
+}
+
+.dashboard-list button:hover,
+.profile-list button:hover {
+  background-color: #5c639d;
+  transform: translateY(-2px);
+}
+
+.dashboard-list li button + button,
+.profile-list li button + button {
+  margin-left: 10px;
+}
+
+.dashboard-list li .delete-interval-btn,
+.profile-list li .delete-interval-btn {
+  margin-right: 10px;
+}
+
+.dashboard-list li .delete-user-btn,
+.dashboard-list li .delete-goal-btn,
+.profile-list li .delete-user-btn,
+.profile-list li .delete-goal-btn {
+  margin-right: 15px;
+}
+
+.interval-info {
+  width: calc(50% - 20px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-form input[type="datetime-local"],
+.dashboard-form input[type="text"],
+.dashboard-form select,
+.profile-form  input[type="datetime-local"],
+.profile-form input[type="text"],
+.profile-form input[type="email"],
+.profile-form input[type="password"],
+.profile-form select {
+  margin: 10px auto;
+}
+
+.dashboard-form select,
+.profile-form select {
+  max-width: 100%;
+}
+
+.dashboard-form input[type="text"],
+.dashboard-form select,
+.profile-form input[type="text"],
+.profile-form input[type="email"],
+.profile-form input[type="password"],
+.profile-form select {
+  width: calc(100% - 20px);
+  display: block;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.error-message,
+.success-message {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.error-message {
+  color: red;
+}
+
+.success-message {
+  color: green;
+}
+
+#create-interval-form,
+#create-goal-form,
+#create-interval-form-profile,
+#create-goal-form-profile {
+  padding: 20px;
+  background-color: #e3e6cc;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+#create-interval-form label,
+#create-goal-form label,
+#create-interval-form-profile label,
+#create-goal-form-profile label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+#create-interval-form input,
+#create-goal-form input,
+#create-interval-form select,
+#create-goal-form select,
+#create-interval-form-profile input,
+#create-goal-form-profile input,
+#create-interval-form-profile select,
+#create-goal-form-profile select{
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+#create-interval-form button,
+#create-goal-form button,
+#create-interval-form-profile button,
+#create-goal-form-profile button {
+  padding: 10px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #6a71be;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+#create-interval-form button:hover,
+#create-goal-form button:hover,
+#create-interval-form-profile button:hover,
+#create-goal-form-profile button:hover {
+  background-color: #5c639d;
+  transform: translateY(-2px);
+}
+
+#deleteProfileBtn {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #d9534f;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+  display: inline-block;
+  margin-top: 20px;
+}
+
+#deleteProfileBtn:hover {
+  background-color: #c9302c;
+  transform: translateY(-2px);
+}
+
+#updateProfileBtn {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #6a71be;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+  display: inline-block;
+}
+
+#updateProfileBtn:hover {
+  background-color: #5c639d;
+  transform: translateY(-2px);
 }

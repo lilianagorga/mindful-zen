@@ -9,53 +9,57 @@
 </head>
 <body>
   <%- include('partials/header') %>
-  <main>
-    <h1>Admin Dashboard</h1>
-    <section>
+  <main class="dashboard-main">
+    <section class="dashboard-section users-section">
       <h2>Users</h2>
-      <ul>
+      <ul class="dashboard-list">
         <% users.forEach(user => { %>
           <li>
-            <%= user.email %> - <%= user.firstName %> <%= user.lastName %>
-            <button data-user-id="<%= user.id %>" class="delete-user-btn">Delete User</button>
-            <form class="dashboard-form update-user-form" data-user-id="<%= user.id %>" style="display: none;">
-              <input type="text" name="firstName" placeholder="First Name" value="<%= user.firstName %>" required>
-              <input type="text" name="lastName" placeholder="Last Name" value="<%= user.lastName %>" required>
-              <input type="email" name="email" placeholder="Email" value="<%= user.email %>" required>
-              <input type="password" name="password" placeholder="New Password">
-              <button type="submit">Update User</button>
-            </form>
-            <button data-user-id="<%= user.id %>" data-type="user" class="show-update-form-btn">Edit User</button>
-            <span class="error-message" data-user-id="<%= user.id %>" style="color: red; display: none;"></span>
-            <span class="success-message" data-user-id="<%= user.id %>" style="color: green; display: none;"></span>
+            <div class="content-wrapper-users">
+              <%= user.email %> - <%= user.firstName %> <%= user.lastName %>  
+            </div>
+            <div class="button-wrapper">
+              <button data-user-id="<%= user.id %>" class="delete-user-btn">Delete User</button>
+              <form class="dashboard-form update-user-form" data-user-id="<%= user.id %>">
+                <input type="text" name="firstName" placeholder="First Name" value="<%= user.firstName %>" required>
+                <input type="text" name="lastName" placeholder="Last Name" value="<%= user.lastName %>" required>
+                <input type="email" name="email" placeholder="Email" value="<%= user.email %>" required>
+                <input type="password" name="password" placeholder="New Password">
+                <button type="submit">Update User</button>
+              </form>
+              <button data-user-id="<%= user.id %>" data-type="user" class="show-update-form-btn">Edit User</button>
+            </div>
+            <span class="error-message" data-user-id="<%= user.id %>"></span>
+            <span class="success-message" data-user-id="<%= user.id %>"></span>
           </li>
         <% }) %>
       </ul>
     </section>
 
-    <section>
+    <section class="dashboard-section">
       <h2>Intervals</h2>
-      <ul>
+      <ul class="dashboard-list">
         <% intervals.forEach(interval => { %>
           <li>
-            <strong>Start:</strong> <%= interval.startDate %> 
-            <strong>End:</strong> <%= interval.endDate %> 
-            <strong>Created by:</strong> <%= interval.user.firstName %> <%= interval.user.lastName %> (<%= interval.user.email %>)
+            <strong>Start:</strong> <span class="interval-info"><%= interval.startDate %></span>
+            <strong>End:</strong> <span class="interval-info"><%= interval.endDate %></span>
+            <strong>Creator:</strong> 
+            <span class="interval-info"><%= interval.user.firstName %> <%= interval.user.lastName %></span>
             <button data-interval-id="<%= interval.id %>" class="delete-interval-btn">Delete Interval</button>
-            <form class="dashboard-form update-interval-form" data-interval-id="<%= interval.id %>" style="display: none;">
+            <form class="dashboard-form update-interval-form" data-interval-id="<%= interval.id %>">
               <input type="datetime-local" name="startDate" value="<%= new Date(interval.startDate).toISOString().slice(0,16) %>" required>
               <input type="datetime-local" name="endDate" value="<%= new Date(interval.endDate).toISOString().slice(0,16) %>" required>
               <button type="submit">Update Interval</button>
             </form>
             <button data-interval-id="<%= interval.id %>" data-type="interval" class="show-update-form-btn">Edit Interval</button>
-            <span class="error-message" data-interval-id="<%= interval.id %>" style="color: red; display: none;"></span>
-            <span class="success-message" data-interval-id="<%= interval.id %>" style="color: green; display: none;"></span>
+            <span class="error-message" data-interval-id="<%= interval.id %>"></span>
+            <span class="success-message" data-interval-id="<%= interval.id %>"></span>
           </li>
         <% }) %>
       </ul>
     </section>
 
-    <section>
+    <section class="dashboard-section">
       <h2>Create New Interval</h2>
       <form id="create-interval-form">
         <label for="startDate">Start Date:</label>
@@ -69,44 +73,49 @@
           <% }) %>
         </select>
         <button type="submit">Create Interval</button>
-        <span id="create-interval-error" class="error-message" style="color: red; display: none;"></span>
-        <span id="create-interval-success" class="success-message" style="color: green; display: none;"></span>
+        <span id="create-interval-error" class="error-message"></span>
+        <span id="create-interval-success" class="success-message"></span>
       </form>
     </section>
 
-    <section>
+    <section class="dashboard-section goals-section">
       <h2>Goals</h2>
-      <ul>
+      <ul class="dashboard-list">
         <% goals.forEach(goal => { %>
           <li>
-            <strong>Name:</strong> <%= goal.name %>
-            <strong>Interval:</strong>
-            <% if (goal.interval) { %>
-              <%= goal.interval.name || `Interval ${goal.interval.id}` %>
-            <% } else { %>
-              N/A
-            <% } %>
-            <button data-goal-id="<%= goal.id %>" class="delete-goal-btn">Delete Goal</button>
-            <form class="dashboard-form update-goal-form" data-goal-id="<%= goal.id %>" style="display: none;">
-              <input type="text" name="name" value="<%= goal.name %>" required>
-              <select name="intervalId">
-                <% intervals.forEach(interval => { %>
-                  <option value="<%= interval.id %>" <%= interval.id === goal.interval.id ? 'selected' : '' %>>
-                    <%= interval.name || `Interval ${interval.id}` %> - Created by <%= interval.user.firstName %> <%= interval.user.lastName %>
-                  </option>
-                <% }) %>
-              </select>
-              <button type="submit">Update Goal</button>
-            </form>
-            <button data-goal-id="<%= goal.id %>" data-type="goal" class="show-update-form-btn">Edit Goal</button>
-            <span class="error-message" data-goal-id="<%= goal.id %>" style="color: red; display: none;"></span>
-            <span class="success-message" data-goal-id="<%= goal.id %>" style="color: green; display: none;"></span>
+            <div class="content-wrapper-goals">
+              <strong>Name:</strong>
+              <span><%= goal.name %></span>
+              <strong>Interval:</strong>
+              <% if (goal.interval) { %>
+                <%= goal.interval.name || `Interval ${goal.interval.id}` %>
+              <% } else { %>
+                N/A
+              <% } %>
+            </div>
+            <div class="button-wrapper">
+              <button data-goal-id="<%= goal.id %>" class="delete-goal-btn">Delete Goal</button>
+              <form class="dashboard-form update-goal-form" data-goal-id="<%= goal.id %>">
+                <input type="text" name="name" value="<%= goal.name %>" required>
+                <select name="intervalId">
+                  <% intervals.forEach(interval => { %>
+                    <option value="<%= interval.id %>" <%= interval.id === goal.interval.id ? 'selected' : '' %>>
+                      <%= interval.name || `Interval ${interval.id}` %> - Created by <%= interval.user.firstName %> <%= interval.user.lastName %>
+                    </option>
+                  <% }) %>
+                </select>
+                <button type="submit">Update Goal</button>
+              </form>
+              <button data-goal-id="<%= goal.id %>" data-type="goal" class="show-update-form-btn">Edit Goal</button>
+            </div>
+            <span class="error-message" data-goal-id="<%= goal.id %>"></span>
+            <span class="success-message" data-goal-id="<%= goal.id %>"></span>
           </li>
         <% }) %>
       </ul>
     </section>
     
-    <section>
+    <section class="dashboard-section">
       <h2>Create New Goal</h2>
       <form id="create-goal-form">
         <label for="name">Name:</label>
@@ -118,8 +127,8 @@
           <% }) %>
         </select>
         <button type="submit">Create Goal</button>
-        <span id="create-goal-error" class="error-message" style="color: red; display: none;"></span>
-        <span id="create-goal-success" class="success-message" style="color: green; display: none;"></span>
+        <span id="create-goal-error" class="error-message"></span>
+        <span id="create-goal-success" class="success-message"></span>
       </form>
     </section>
   </main>
