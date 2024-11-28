@@ -124,61 +124,8 @@
     </section>
   </main>
 
+  <script src="/js/utils.bundle.js"></script>
   <script>
-    function showErrorMessage(element, message) {
-      element.textContent = message;
-      element.style.display = 'inline';
-      setTimeout(() => {
-        element.style.display = 'none';
-        element.textContent = '';
-      }, 5000);
-    }
-    function showSuccessMessage(element, message) {
-      element.textContent = message;
-      element.style.display = 'inline';
-      setTimeout(() => {
-        element.style.display = 'none';
-        element.textContent = '';
-      }, 5000);
-    }
-    function getAssociatedForm(button) {
-      const type = button.getAttribute('data-type');
-
-      if (type === 'user') {
-        const userId = button.getAttribute('data-user-id');
-        return document.querySelector(`.update-user-form[data-user-id="${userId}"]`);
-      } else if (type === 'interval') {
-        const intervalId = button.getAttribute('data-interval-id');
-        return document.querySelector(`.update-interval-form[data-interval-id="${intervalId}"]`);
-      } else if (type === 'goal') {
-        const goalId = button.getAttribute('data-goal-id');
-        return document.querySelector(`.update-goal-form[data-goal-id="${goalId}"]`);
-      }
-
-      console.warn('No form found for this button.');
-      return null;
-    }
-    function showLoading(message = "Loading...") {
-      const loadingOverlay = document.getElementById('loading-overlay');
-      loadingOverlay.textContent = message;
-      loadingOverlay.style.display = 'flex';
-    }
-    function hideLoading(delay = 2000) {
-      const loadingOverlay = document.getElementById('loading-overlay');
-      setTimeout(() => {
-        loadingOverlay.style.display = 'none';
-      }, delay);
-    }
-    function disableUI() {
-      document.querySelectorAll('button, input, select').forEach(element => {
-        element.disabled = true;
-      });
-    }
-    function enableUI() {
-      document.querySelectorAll('button, input, select').forEach(element => {
-        element.disabled = false;
-      });
-    }
       document.addEventListener('DOMContentLoaded', function() {
         hideLoading();
         const deleteUserButtons = document.querySelectorAll('.delete-user-btn');
@@ -502,7 +449,7 @@
       });
   </script>
   <%- include('partials/footer') %>
-  <div id="loading-overlay">
+  <div class="loading-overlay">
     Loading...
   </div>
 </body>
