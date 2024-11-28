@@ -308,7 +308,7 @@ form.profile-form input.profile-error {
   background-color: #ffe6e6;
 }
 
-#loading-overlay, #loading-profile-overlay {
+.loading-overlay {
   display: none;
   position: fixed;
   top: 0;
