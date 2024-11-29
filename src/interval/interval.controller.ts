@@ -27,10 +27,17 @@ export class IntervalController {
   @Get()
   @Roles('admin', 'user')
   async getAllIntervals(@Req() req: Request, @Res() res: Response) {
-    const intervals =
-      req.user.role === 'admin'
-        ? await this.intervalService.findAll()
-        : await this.intervalService.findByUserOrPublic(req.user.id);
+    console.log('query:', req.query);
+    const params = {
+      startDate: req.query.startDate as string,
+      endDate: req.query.endDate as string,
+      goalName: req.query.goalName as string,
+      isAdmin: req.user.role === 'admin',
+      userId: req.user.id as number,
+    };
+
+    const intervals = await this.intervalService.filterIntervals(params);
+    console.log('intervals:', intervals);
 
     return res.json(intervals);
   }

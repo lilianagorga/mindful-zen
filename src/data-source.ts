@@ -17,7 +17,7 @@ const AppDataSource = new DataSource({
       ? process.env.DB_TEST_NAME
       : process.env.DB_NAME,
   entities: [User, Interval, Goal],
-  migrations: ['src/migrations/*.ts'],
+  migrations: ['src/migrations/*.ts', 'src/migrations/*.sql'],
   synchronize: false,
 });
 
