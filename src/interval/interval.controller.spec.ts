@@ -14,6 +14,7 @@ describe('IntervalController', () => {
     findAll: jest.fn(),
     findByUserOrPublic: jest.fn(),
     findById: jest.fn(),
+    filterIntervals: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
@@ -66,13 +67,23 @@ describe('IntervalController', () => {
     const result = [
       { id: 1, startDate: new Date(), endDate: new Date(), userId: 1 },
     ];
-    mockIntervalService.findAll.mockResolvedValue(result);
+    mockIntervalService.filterIntervals.mockResolvedValue(result);
 
     const res = mockResponse();
-    await intervalController.getAllIntervals(mockAdminRequest, res);
 
-    expect(mockIntervalService.findAll).toHaveBeenCalledTimes(1);
-    expect(mockIntervalService.findByUserOrPublic).not.toHaveBeenCalled();
+    const mockAdminRequestWithQuery = {
+      ...mockAdminRequest,
+      query: {},
+    } as unknown as Request;
+
+    await intervalController.getAllIntervals(mockAdminRequestWithQuery, res);
+    expect(mockIntervalService.filterIntervals).toHaveBeenCalledWith({
+      startDate: undefined,
+      endDate: undefined,
+      goalName: undefined,
+      isAdmin: true,
+      userId: 1,
+    });
     expect(res.json).toHaveBeenCalledWith(result);
   });
 
@@ -81,13 +92,24 @@ describe('IntervalController', () => {
       { id: 2, startDate: new Date(), endDate: new Date(), userId: 2 },
       { id: 3, startDate: new Date(), endDate: new Date(), userId: null },
     ];
-    mockIntervalService.findByUserOrPublic.mockResolvedValue(result);
+    mockIntervalService.filterIntervals.mockResolvedValue(result);
 
     const res = mockResponse();
-    await intervalController.getAllIntervals(mockUserRequest, res);
 
-    expect(mockIntervalService.findByUserOrPublic).toHaveBeenCalledWith(2);
-    expect(mockIntervalService.findAll).not.toHaveBeenCalled();
+    const mockUserRequestWithQuery = {
+      ...mockUserRequest,
+      query: {},
+    } as unknown as Request;
+
+    await intervalController.getAllIntervals(mockUserRequestWithQuery, res);
+
+    expect(mockIntervalService.filterIntervals).toHaveBeenCalledWith({
+      startDate: undefined,
+      endDate: undefined,
+      goalName: undefined,
+      isAdmin: false,
+      userId: 2,
+    });
     expect(res.json).toHaveBeenCalledWith(result);
   });
 

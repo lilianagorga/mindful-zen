@@ -61,4 +61,49 @@ export class IntervalService {
       throw new NotFoundException(`Interval with ID ${id} not found`);
     }
   }
+
+  async filterIntervals(filters: {
+    goalName?: string;
+    startDate?: string;
+    endDate?: string;
+    isAdmin: boolean;
+    userId?: number;
+  }): Promise<Interval[]> {
+    const intervals = filters.isAdmin
+      ? await this.findAll()
+      : await this.findByUserOrPublic(filters.userId);
+
+    const filteredIntervals = intervals.filter((interval) => {
+      if (!filters.isAdmin) {
+        const isPublic = !interval.userId;
+        const isUserInterval = interval.userId === filters.userId;
+        if (!isPublic && !isUserInterval) {
+          return false;
+        }
+      }
+
+      if (filters.goalName) {
+        const matchesGoalName = interval.goals.some(
+          (goal) => goal.name === filters.goalName,
+        );
+        if (!matchesGoalName) {
+          return false;
+        }
+      }
+      if (filters.startDate) {
+        const startDate = new Date(filters.startDate);
+        if (interval.startDate < startDate) {
+          return false;
+        }
+      }
+      if (filters.endDate) {
+        const endDate = new Date(filters.endDate);
+        if (interval.endDate > endDate) {
+          return false;
+        }
+      }
+      return true;
+    });
+    return filteredIntervals;
+  }
 }
