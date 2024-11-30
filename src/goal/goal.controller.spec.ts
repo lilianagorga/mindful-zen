@@ -110,8 +110,13 @@ describe('GoalController', () => {
   });
 
   it('should update a goal', async () => {
-    const updateGoalDto = { name: 'Updated Goal' };
+    const updateGoalDto = { name: 'Updated Goal', intervalId: 2 };
     const updatedGoal = { id: 1, ...updateGoalDto };
+    mockGoalService.findById.mockResolvedValue({
+      id: 1,
+      name: 'Old Goal',
+      intervalId: 1,
+    });
     mockGoalService.update.mockResolvedValue(updatedGoal);
 
     await goalController.updateGoal(
@@ -120,6 +125,7 @@ describe('GoalController', () => {
       mockAdminRequest,
       mockResponse,
     );
+    expect(mockGoalService.findById).toHaveBeenCalledWith(1);
     expect(mockGoalService.update).toHaveBeenCalledWith(1, updateGoalDto);
     expect(mockResponse.json).toHaveBeenCalledWith(updatedGoal);
   });
