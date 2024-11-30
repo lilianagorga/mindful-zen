@@ -27,7 +27,6 @@ export class IntervalController {
   @Get()
   @Roles('admin', 'user')
   async getAllIntervals(@Req() req: Request, @Res() res: Response) {
-    console.log('query:', req.query);
     const params = {
       startDate: req.query.startDate as string,
       endDate: req.query.endDate as string,
@@ -37,8 +36,6 @@ export class IntervalController {
     };
 
     const intervals = await this.intervalService.filterIntervals(params);
-    console.log('intervals:', intervals);
-
     return res.json(intervals);
   }
 

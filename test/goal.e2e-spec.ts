@@ -197,7 +197,10 @@ describe('GoalController (e2e)', () => {
     createdGoalId = goalResponse.body.id;
     expect(createdGoalId).toBeDefined();
 
-    const updatedGoalData = { name: 'Updated Goal Name' };
+    const updatedGoalData = {
+      name: 'Updated Goal Name',
+      intervalId: createdIntervalId,
+    };
     const updateResponse = await request(app.getHttpServer())
       .put(`/goals/${createdGoalId}`)
       .set('Authorization', `Bearer ${adminToken}`)
@@ -205,6 +208,7 @@ describe('GoalController (e2e)', () => {
       .expect(200);
 
     expect(updateResponse.body.name).toBe(updatedGoalData.name);
+    expect(updateResponse.body.intervalId).toBe(updatedGoalData.intervalId);
   });
 
   it('should partially update a goal', async () => {

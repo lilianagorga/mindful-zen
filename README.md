@@ -1,99 +1,219 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Mindful-Zen
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Mindful-Zen is a platform that combines productivity and mindfulness, designed to help users manage their goals and time intervals in an organized and mindful way. Whether you want to track personal progress or collaborate in a professional setting, Mindful-Zen provides intuitive tools to enhance focus and achieve your goals with ease and clarity.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## Technologies
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**Mindful-Zen leverages the following technologies and libraries to provide a robust and scalable solution**:
+**Backend**:
+•	Node.js: For building the server-side application.
+•	NestJS: For creating a modular and testable architecture.
+•	TypeORM: As an Object-Relational Mapper (ORM) to handle database interactions.
+•	JWT (jsonwebtoken): For authentication and token management.
+•	class-validator: For validating user input and enforcing data integrity.
+•	cookie-parser: To handle cookies for token management.
+**Frontend**:
+•	EJS: Embedded JavaScript templates for creating server-side rendered views.
+•	Browserify: For bundling frontend scripts for modularity and reusability.
+•	Axios: For making HTTP requests from the frontend to the backend API.
 
-## Project setup
 
-```bash
-$ npm install
-```
+## Functionalities
 
-## Compile and run the project
+**User Management**:
+•	Role-based access control using roles (user and admin) to restrict and manage access to resources.
+•	Token-based authentication using JWT for secured API calls.
+•	Support for token storage in cookies or Authorization headers.
+**Intervals Management**:
+•	Define start and end dates for specific intervals linked to users.
+•	Cascade delete functionality to maintain referential integrity.
+**Goals Management**:
+•	Assign goals to specific intervals for tracking progress.
+•	Ensure goals are connected to intervals and users.
+**API Endpoints**:
+•	RESTful endpoints for CRUD users, intervals and goals.
+•	Token-based authentication for secured API calls.
+**Testing**:
+•	Comprehensive test coverage for unit and integration tests.
+•	Use of environment-specific databases for development and testing.
 
-```bash
-# development
-$ npm run start
 
-# watch mode
-$ npm run start:dev
+## Requisites
 
-# production mode
-$ npm run start:prod
-```
+**Before running the application ensure the following prerequisites are installed on your system**:
+•	Node.js.
+•	PostgreSQL: For the database.
+•	TypeScript: Compiles TypeScript code to JavaScript.
+•	Dependencies: Install required npm packages using npm install.
 
-## Run tests
 
-```bash
-# unit tests
-$ npm run test
+## Configuration
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+**To configure the application for development or production you need to set environment variables. Create a .env file in the root directory with the following variables**:
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=yourDatabaseUser
+DB_PASS=yourDatabasePassword
+DB_NAME=mindful-zen-dev
+DB_TEST_NAME=mindful-zen-test
+JWT_SECRET=yourJWTSecretKey
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
-## Resources
+## Installation
 
-Check out a few resources that may come in handy when working with NestJS:
+1.	**Clone the Repository**:
+```bash
+git clone https://github.com/lilianagorga/mindful-zen
+```
+2.	**Navigate to the Project Directory**:
+```bash
+cd mindful-zen
+```
+3.	**Install Dependencies**:
+```bash
+npm install
+```
+4.	**Build the Project**:
+```bash
+npm run build
+```
+5.	**Set up Databases**:
+•	Ensure PostgreSQL is running on your system.
+•	Create mindful-zen-dev and mindful-zen-test databases.
+•	Generate migration:
+```bash
+npx typeorm migration:generate ./src/migrations/InitialMigration --dataSource ./dist/data-source.js
+```
+•	Run migration:
+```bash
+npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run --dataSource ./dist/data-source.js
+```
+•	Repeat the above steps with NODE_ENV=test to set up the testing environment:
+```bash
+NODE_ENV=test npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run --dataSource ./dist/data-source.js
+```
+6.	**Run the Application**:
+```bash
+npm run start:dev
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-## Support
+## API Endpoints
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Home**:
+•	GET /: Returns the home page with the welcome message.
+•	GET /register: Displays the user registration form.
+•	GET /login: Displays the user login form.
+•	GET /logout: Logs out the current user, clears the JWT cookie, and redirects to the login page.
+•	POST /register: Registers a new user with the provided details.
+•	POST /login: Authenticates the user and provides a JWT token for secured access.
+**Users**:
+•	GET /users: Retrieves all users (admin-only).
+•	GET /users/:id: Retrieves details of a specific user by ID (accessible to admin and the user themselves).
+•	PUT /users/:id: Updates user details (accessible to admin and the user themselves).
+•	PATCH /users/:id: Partially updates user details (accessible to admin and the user themselves).
+•	DELETE /users/:id: Deletes a user by ID (accessible to admin and the user themselves).
+**Intervals**:
+•	GET /intervals: Retrieves all intervals with optional filtering based on query parameters:
+  •	startDate: Filters intervals starting after the provided date.
+  •	endDate: Filters intervals ending before the provided date.
+  •	goalName: Filters intervals associated with a specific goal name.
+  •	Admins can view all intervals while regular users can only view their own.
+•	GET /intervals/:id: Retrieves details of a specific interval by ID.
+•	POST /intervals: Creates a new interval linked to the current user.
+•	PUT /intervals/:id: Updates an interval by ID.
+•	PATCH /intervals/:id: Partially updates an interval by ID.
+•	DELETE /intervals/:id: Deletes an interval by ID.
+**Goals**:
+•	GET /goals: Retrieves all goals:
+  •	Admins can view all goals while regular users can view their own or public goals.
+•	GET /goals/:id: Retrieves details of a specific goal by ID.
+•	POST /goals: Creates a new goal associated with a specific interval.
+•	PUT /goals/:id: Updates a goal by ID.
+•	PATCH /goals/:id: Partially updates a goal by ID.
+•	DELETE /goals/:id: Deletes a goal by ID.
+**Dashboard (Admin-Only)**:
+•	GET /dashboard: Displays a dashboard view with all users, intervals and goals.
+•	POST /dashboard/intervals: Creates a new interval linked to a specific user.
+•	PUT /dashboard/intervals/:id: Updates an interval by ID.
+•	PATCH /dashboard/intervals/:id: Partially updates an interval by ID.
+•	DELETE /dashboard/intervals/:id: Deletes an interval by ID.
+•	POST /dashboard/goals: Creates a new goal associated with a specific interval.
+•	PUT /dashboard/goals/:id: Updates a goal by ID.
+•	DELETE /dashboard/goals/:id: Deletes a goal by ID.
+**Profile (Current User)**:
+•	GET /profile: Retrieves the profile view of the current user including their intervals and goals.
+•	PUT /profile: Updates the current user’s profile.
+•	PATCH /profile: Partially updates the current user’s profile.
+•	DELETE /profile: Deletes the current user’s profile.
+•	POST /profile/intervals: Creates a new interval linked to the current user.
+•	PUT /profile/intervals/:id: Updates an interval linked to the current user by ID.
+•	PATCH /profile/intervals/:id: Partially updates an interval linked to the current user by ID.
+•	DELETE /profile/intervals/:id: Deletes an interval linked to the current user by ID.
+•	POST /profile/goals: Creates a new goal linked to an interval owned by the current user.
+•	PUT /profile/goals/:id: Updates a goal owned by the current user by ID.
+•	DELETE /profile/goals/:id: Deletes a goal owned by the current user by ID.
 
-## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Testing
 
-## License
+**Run tests using the following commands**:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+1.	**Run Unit Tests**:
+```bash
+NODE_ENV=test npm run test
+```
+2.	**Run e2e Tests**:
+
+**Important**: Before running e2e tests for the first time ensure that the synchronize option is set to true in the database configuration (src/database.module.ts). This allows the database schema to be created automatically for testing. After the initial run reset the value to false to prevent unintended schema changes.
+```bash
+NODE_ENV=test npm run test:e2e
+```
+
+
+## Frontend Development
+
+**To promote reusability and maintainability in the frontend specific functions were developed in TypeScript and bundled into a single JavaScript file using Browserify. Here’s the process followed**:
+1.	**Write reusable frontend logic in a TypeScript file (e.g. src/frontend/utils.ts)**.
+2.	**Compile the TypeScript file to JavaScript using**:
+```bash
+tsc src/utils/utils.ts --outDir dist/utils
+```
+3. **Bundle the compiled JavaScript file into a single file located in the public directory using Browserify**:
+```bash
+browserify dist/utils/utils.js -o public/js/bundle.js
+```
+4.	**Import the bundled JavaScript file into EJS views using**:
+```bash
+<script src="/js/bundle.js"></script>
+```
+
+
+## Contributing
+
+**Contributions are welcome! Here’s how you can contribute**:
+
+1.  **Fork the repository**.
+2.  **Create a new branch**:
+```bash
+git checkout -b feature/your-feature
+```
+3.  **Commit your changes**:
+```bash
+git commit -m "Add your feature"
+```
+4.	**Push your branch**:
+```bash
+git push origin feature/your-feature
+```
+5.	**Open a pull request**.
+
+
+
+### License
+
+**This project is licensed under the MIT License**.

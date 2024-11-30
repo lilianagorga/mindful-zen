@@ -91,6 +91,12 @@ export class GoalController {
       return res.status(403).json({ message: 'Access denied' });
     }
 
+    if (!updateGoalDto.name || !updateGoalDto.intervalId) {
+      return res
+        .status(400)
+        .json({ message: 'Missing required fields for full update' });
+    }
+
     const updatedGoal = await this.goalService.update(
       parseInt(id, 10),
       updateGoalDto,
