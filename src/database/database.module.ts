@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { CustomNamingStrategy } from '../custom-naming-strategy';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ConfigModule } from '@nestjs/config';
           database: databaseName,
           autoLoadEntities: true,
           synchronize: false,
+          namingStrategy: new CustomNamingStrategy(),
         };
       },
     }),
