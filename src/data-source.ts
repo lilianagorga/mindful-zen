@@ -3,6 +3,7 @@ import { User } from './entities/user.entity';
 import { Interval } from './entities/interval.entity';
 import { Goal } from './entities/goal.entity';
 import * as dotenv from 'dotenv';
+import { CustomNamingStrategy } from './custom-naming-strategy';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ const AppDataSource = new DataSource({
   entities: [User, Interval, Goal],
   migrations: ['src/migrations/*.ts', 'src/migrations/*.sql'],
   synchronize: false,
+  namingStrategy: new CustomNamingStrategy(),
 });
 
 export default AppDataSource;
