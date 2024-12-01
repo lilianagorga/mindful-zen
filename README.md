@@ -7,45 +7,45 @@ Mindful-Zen is a platform that combines productivity and mindfulness, designed t
 
 **Mindful-Zen leverages the following technologies and libraries to provide a robust and scalable solution**:
 **Backend**:
-•	Node.js: For building the server-side application.
-•	NestJS: For creating a modular and testable architecture.
-•	TypeORM: As an Object-Relational Mapper (ORM) to handle database interactions.
-•	JWT (jsonwebtoken): For authentication and token management.
-•	class-validator: For validating user input and enforcing data integrity.
-•	cookie-parser: To handle cookies for token management.
+-	Node.js: For building the server-side application.
+-	NestJS: For creating a modular and testable architecture.
+-	TypeORM: As an Object-Relational Mapper (ORM) to handle database interactions.
+-	JWT (jsonwebtoken): For authentication and token management.
+-	class-validator: For validating user input and enforcing data integrity.
+-	cookie-parser: To handle cookies for token management.
 **Frontend**:
-•	EJS: Embedded JavaScript templates for creating server-side rendered views.
-•	Browserify: For bundling frontend scripts for modularity and reusability.
-•	Axios: For making HTTP requests from the frontend to the backend API.
+-	EJS: Embedded JavaScript templates for creating server-side rendered views.
+-	Browserify: For bundling frontend scripts for modularity and reusability.
+-	Axios: For making HTTP requests from the frontend to the backend API.
 
 
 ## Functionalities
 
 **User Management**:
-•	Role-based access control using roles (user and admin) to restrict and manage access to resources.
-•	Token-based authentication using JWT for secured API calls.
-•	Support for token storage in cookies or Authorization headers.
+- Role-based access control using roles (user and admin) to restrict and manage access to resources.
+- Token-based authentication using JWT for secured API calls.
+- Support for token storage in cookies or Authorization headers.
 **Intervals Management**:
-•	Define start and end dates for specific intervals linked to users.
-•	Cascade delete functionality to maintain referential integrity.
+- Define start and end dates for specific intervals linked to users.
+- Cascade delete functionality to maintain referential integrity.
 **Goals Management**:
-•	Assign goals to specific intervals for tracking progress.
-•	Ensure goals are connected to intervals and users.
+- Assign goals to specific intervals for tracking progress.
+- Ensure goals are connected to intervals and users.
 **API Endpoints**:
-•	RESTful endpoints for CRUD users, intervals and goals.
-•	Token-based authentication for secured API calls.
+- RESTful endpoints for CRUD users, intervals and goals.
+- Token-based authentication for secured API calls.
 **Testing**:
-•	Comprehensive test coverage for unit and integration tests.
-•	Use of environment-specific databases for development and testing.
+- Comprehensive test coverage for unit and integration tests.
+- Use of environment-specific databases for development and testing.
 
 
 ## Requisites
 
 **Before running the application ensure the following prerequisites are installed on your system**:
-•	Node.js.
-•	PostgreSQL: For the database.
-•	TypeScript: Compiles TypeScript code to JavaScript.
-•	Dependencies: Install required npm packages using npm install.
+- Node.js.
+- PostgreSQL: For the database.
+- TypeScript: Compiles TypeScript code to JavaScript.
+- Dependencies: Install required npm packages using npm install.
 
 
 ## Configuration
@@ -88,11 +88,11 @@ npm run build
 ```bash
 npx typeorm migration:generate ./src/migrations/InitialMigration --dataSource ./dist/data-source.js
 ```
-•	Run migration:
+  •	Run migration:
 ```bash
 npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run --dataSource ./dist/data-source.js
 ```
-•	Repeat the above steps with NODE_ENV=test to set up the testing environment:
+  •	Repeat the above steps with NODE_ENV=test to set up the testing environment:
 ```bash
 NODE_ENV=test npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run --dataSource ./dist/data-source.js
 ```
@@ -105,58 +105,58 @@ npm run start:dev
 ## API Endpoints
 
 **Home**:
-•	GET /: Returns the home page with the welcome message.
-•	GET /register: Displays the user registration form.
-•	GET /login: Displays the user login form.
-•	GET /logout: Logs out the current user, clears the JWT cookie, and redirects to the login page.
-•	POST /register: Registers a new user with the provided details.
-•	POST /login: Authenticates the user and provides a JWT token for secured access.
+-	GET /: Returns the home page with the welcome message.
+-	GET /register: Displays the user registration form.
+-	GET /login: Displays the user login form.
+-	GET /logout: Logs out the current user, clears the JWT cookie, and redirects to the login page.
+-	POST /register: Registers a new user with the provided details.
+-	POST /login: Authenticates the user and provides a JWT token for secured access.
 **Users**:
-•	GET /users: Retrieves all users (admin-only).
-•	GET /users/:id: Retrieves details of a specific user by ID (accessible to admin and the user themselves).
-•	PUT /users/:id: Updates user details (accessible to admin and the user themselves).
-•	PATCH /users/:id: Partially updates user details (accessible to admin and the user themselves).
-•	DELETE /users/:id: Deletes a user by ID (accessible to admin and the user themselves).
+-	GET /users: Retrieves all users (admin-only).
+-	GET /users/:id: Retrieves details of a specific user by ID (accessible to admin and the user themselves).
+-	PUT /users/:id: Updates user details (accessible to admin and the user themselves).
+-	PATCH /users/:id: Partially updates user details (accessible to admin and the user themselves).
+-	DELETE /users/:id: Deletes a user by ID (accessible to admin and the user themselves).
 **Intervals**:
-•	GET /intervals: Retrieves all intervals with optional filtering based on query parameters:
-  •	startDate: Filters intervals starting after the provided date.
-  •	endDate: Filters intervals ending before the provided date.
-  •	goalName: Filters intervals associated with a specific goal name.
-  •	Admins can view all intervals while regular users can only view their own.
-•	GET /intervals/:id: Retrieves details of a specific interval by ID.
-•	POST /intervals: Creates a new interval linked to the current user.
-•	PUT /intervals/:id: Updates an interval by ID.
-•	PATCH /intervals/:id: Partially updates an interval by ID.
-•	DELETE /intervals/:id: Deletes an interval by ID.
+-	GET /intervals: Retrieves all intervals with optional filtering based on query parameters:
+  -	startDate: Filters intervals starting after the provided date.
+  -	endDate: Filters intervals ending before the provided date.
+  -	goalName: Filters intervals associated with a specific goal name.
+  -	Admins can view all intervals while regular users can only view their own.
+-	GET /intervals/:id: Retrieves details of a specific interval by ID.
+-	POST /intervals: Creates a new interval linked to the current user.
+-	PUT /intervals/:id: Updates an interval by ID.
+-	PATCH /intervals/:id: Partially updates an interval by ID.
+-	DELETE /intervals/:id: Deletes an interval by ID.
 **Goals**:
-•	GET /goals: Retrieves all goals:
-  •	Admins can view all goals while regular users can view their own or public goals.
-•	GET /goals/:id: Retrieves details of a specific goal by ID.
-•	POST /goals: Creates a new goal associated with a specific interval.
-•	PUT /goals/:id: Updates a goal by ID.
-•	PATCH /goals/:id: Partially updates a goal by ID.
-•	DELETE /goals/:id: Deletes a goal by ID.
+-	GET /goals: Retrieves all goals:
+  -	Admins can view all goals while regular users can view their own or public goals.
+-	GET /goals/:id: Retrieves details of a specific goal by ID.
+-	POST /goals: Creates a new goal associated with a specific interval.
+-	PUT /goals/:id: Updates a goal by ID.
+-	PATCH /goals/:id: Partially updates a goal by ID.
+-	DELETE /goals/:id: Deletes a goal by ID.
 **Dashboard (Admin-Only)**:
-•	GET /dashboard: Displays a dashboard view with all users, intervals and goals.
-•	POST /dashboard/intervals: Creates a new interval linked to a specific user.
-•	PUT /dashboard/intervals/:id: Updates an interval by ID.
-•	PATCH /dashboard/intervals/:id: Partially updates an interval by ID.
-•	DELETE /dashboard/intervals/:id: Deletes an interval by ID.
-•	POST /dashboard/goals: Creates a new goal associated with a specific interval.
-•	PUT /dashboard/goals/:id: Updates a goal by ID.
-•	DELETE /dashboard/goals/:id: Deletes a goal by ID.
+-	GET /dashboard: Displays a dashboard view with all users, intervals and goals.
+-	POST /dashboard/intervals: Creates a new interval linked to a specific user.
+-	PUT /dashboard/intervals/:id: Updates an interval by ID.
+-	PATCH /dashboard/intervals/:id: Partially updates an interval by ID.
+-	DELETE /dashboard/intervals/:id: Deletes an interval by ID.
+-	POST /dashboard/goals: Creates a new goal associated with a specific interval.
+-	PUT /dashboard/goals/:id: Updates a goal by ID.
+-	DELETE /dashboard/goals/:id: Deletes a goal by ID.
 **Profile (Current User)**:
-•	GET /profile: Retrieves the profile view of the current user including their intervals and goals.
-•	PUT /profile: Updates the current user’s profile.
-•	PATCH /profile: Partially updates the current user’s profile.
-•	DELETE /profile: Deletes the current user’s profile.
-•	POST /profile/intervals: Creates a new interval linked to the current user.
-•	PUT /profile/intervals/:id: Updates an interval linked to the current user by ID.
-•	PATCH /profile/intervals/:id: Partially updates an interval linked to the current user by ID.
-•	DELETE /profile/intervals/:id: Deletes an interval linked to the current user by ID.
-•	POST /profile/goals: Creates a new goal linked to an interval owned by the current user.
-•	PUT /profile/goals/:id: Updates a goal owned by the current user by ID.
-•	DELETE /profile/goals/:id: Deletes a goal owned by the current user by ID.
+-	GET /profile: Retrieves the profile view of the current user including their intervals and goals.
+-	PUT /profile: Updates the current user’s profile.
+-	PATCH /profile: Partially updates the current user’s profile.
+-	DELETE /profile: Deletes the current user’s profile.
+-	POST /profile/intervals: Creates a new interval linked to the current user.
+-	PUT /profile/intervals/:id: Updates an interval linked to the current user by ID.
+-	PATCH /profile/intervals/:id: Partially updates an interval linked to the current user by ID.
+-	DELETE /profile/intervals/:id: Deletes an interval linked to the current user by ID.
+-	POST /profile/goals: Creates a new goal linked to an interval owned by the current user.
+-	PUT /profile/goals/:id: Updates a goal owned by the current user by ID.
+-	DELETE /profile/goals/:id: Deletes a goal owned by the current user by ID.
 
 
 ## Testing
@@ -169,7 +169,7 @@ NODE_ENV=test npm run test
 ```
 2.	**Run e2e Tests**:
 
-**Important**: Before running e2e tests for the first time ensure that the synchronize option is set to true in the database configuration (src/database.module.ts). This allows the database schema to be created automatically for testing. After the initial run reset the value to false to prevent unintended schema changes.
+  **Important**: Before running e2e tests for the first time ensure that the synchronize option is set to true in the database configuration (src/database.module.ts). This allows the database schema to be created automatically for testing. After the initial run reset the value to false to prevent unintended schema changes.
 ```bash
 NODE_ENV=test npm run test:e2e
 ```
