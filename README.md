@@ -101,62 +101,96 @@ NODE_ENV=test npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.
 npm run start:dev
 ```
 
+## Docker
+
+### Mindful-Zen can be easily containerized and deployed using Docker. The project includes a Dockerfile and docker-compose.yml to simplify the setup process.
+
+**Steps to Use Docker**
+
+1.	**Build and Run the Application**:
+**Use the following command to build the Docker image and start the application**:
+```bash
+docker-compose up --build
+```
+2.	**Access the Application**:
+**Once the containers are running, the application will be accessible at**:
+```bash
+http://localhost:3000
+```
+3.	**Database Configuration**:
+**The docker-compose.yml sets up two PostgreSQL containers: one for development (db) and one for testing (db_test) using the environment variables defined in the .env file**.
+4.	**Shutting Down the Containers**:
+**To stop and remove all containers, networks and volumes run**:
+```bash
+docker-compose down
+```
+5.	**Rebuilding the Containers (Optional)**:
+**If you make changes to the Dockerfile or docker-compose.yml, rebuild the containers with**:
+```bash
+docker-compose up --build
+```
+
 
 ## API Endpoints
 
-**Home**:
--	GET /: Returns the home page with the welcome message.
--	GET /register: Displays the user registration form.
--	GET /login: Displays the user login form.
--	GET /logout: Logs out the current user, clears the JWT cookie, and redirects to the login page.
--	POST /register: Registers a new user with the provided details.
--	POST /login: Authenticates the user and provides a JWT token for secured access.
-**Users**:
--	GET /users: Retrieves all users (admin-only).
--	GET /users/:id: Retrieves details of a specific user by ID (accessible to admin and the user themselves).
--	PUT /users/:id: Updates user details (accessible to admin and the user themselves).
--	PATCH /users/:id: Partially updates user details (accessible to admin and the user themselves).
--	DELETE /users/:id: Deletes a user by ID (accessible to admin and the user themselves).
-**Intervals**:
--	GET /intervals: Retrieves all intervals with optional filtering based on query parameters:
-  -	startDate: Filters intervals starting after the provided date.
-  -	endDate: Filters intervals ending before the provided date.
-  -	goalName: Filters intervals associated with a specific goal name.
-  -	Admins can view all intervals while regular users can only view their own.
--	GET /intervals/:id: Retrieves details of a specific interval by ID.
--	POST /intervals: Creates a new interval linked to the current user.
--	PUT /intervals/:id: Updates an interval by ID.
--	PATCH /intervals/:id: Partially updates an interval by ID.
--	DELETE /intervals/:id: Deletes an interval by ID.
-**Goals**:
--	GET /goals: Retrieves all goals:
-  -	Admins can view all goals while regular users can view their own or public goals.
--	GET /goals/:id: Retrieves details of a specific goal by ID.
--	POST /goals: Creates a new goal associated with a specific interval.
--	PUT /goals/:id: Updates a goal by ID.
--	PATCH /goals/:id: Partially updates a goal by ID.
--	DELETE /goals/:id: Deletes a goal by ID.
-**Dashboard (Admin-Only)**:
--	GET /dashboard: Displays a dashboard view with all users, intervals and goals.
--	POST /dashboard/intervals: Creates a new interval linked to a specific user.
--	PUT /dashboard/intervals/:id: Updates an interval by ID.
--	PATCH /dashboard/intervals/:id: Partially updates an interval by ID.
--	DELETE /dashboard/intervals/:id: Deletes an interval by ID.
--	POST /dashboard/goals: Creates a new goal associated with a specific interval.
--	PUT /dashboard/goals/:id: Updates a goal by ID.
--	DELETE /dashboard/goals/:id: Deletes a goal by ID.
-**Profile (Current User)**:
--	GET /profile: Retrieves the profile view of the current user including their intervals and goals.
--	PUT /profile: Updates the current user’s profile.
--	PATCH /profile: Partially updates the current user’s profile.
--	DELETE /profile: Deletes the current user’s profile.
--	POST /profile/intervals: Creates a new interval linked to the current user.
--	PUT /profile/intervals/:id: Updates an interval linked to the current user by ID.
--	PATCH /profile/intervals/:id: Partially updates an interval linked to the current user by ID.
--	DELETE /profile/intervals/:id: Deletes an interval linked to the current user by ID.
--	POST /profile/goals: Creates a new goal linked to an interval owned by the current user.
--	PUT /profile/goals/:id: Updates a goal owned by the current user by ID.
--	DELETE /profile/goals/:id: Deletes a goal owned by the current user by ID.
+### Home:
+- **GET /**: Returns the home page with the welcome message.
+- **GET /register**: Displays the user registration form.
+- **GET /login**: Displays the user login form.
+- **GET /logout**: Logs out the current user, clears the JWT cookie, and redirects to the login page.
+- **POST /register**: Registers a new user with the provided details.
+- **POST /login**: Authenticates the user and provides a JWT token for secured access.
+
+### Users:
+- **GET /users**: Retrieves all users (admin-only).
+- **GET /users/:id**: Retrieves details of a specific user by ID (accessible to admin and the user themselves).
+- **PUT /users/:id**: Updates user details (accessible to admin and the user themselves).
+- **PATCH /users/:id**: Partially updates user details (accessible to admin and the user themselves).
+- **DELETE /users/:id**: Deletes a user by ID (accessible to admin and the user themselves).
+
+### Intervals:
+- **GET /intervals**: Retrieves all intervals with optional filtering based on query parameters:
+  - **startDate**: Filters intervals starting after the provided date.
+  - **endDate**: Filters intervals ending before the provided date.
+  - **goalName**: Filters intervals associated with a specific goal name.
+  - Admins can view all intervals while regular users can only view their own.
+- **GET /intervals/:id**: Retrieves details of a specific interval by ID.
+- **POST /intervals**: Creates a new interval linked to the current user.
+- **PUT /intervals/:id**: Updates an interval by ID.
+- **PATCH /intervals/:id**: Partially updates an interval by ID.
+- **DELETE /intervals/:id**: Deletes an interval by ID.
+
+### Goals:
+- **GET /goals**: Retrieves all goals:
+  - Admins can view all goals while regular users can view their own or public goals.
+- **GET /goals/:id**: Retrieves details of a specific goal by ID.
+- **POST /goals**: Creates a new goal associated with a specific interval.
+- **PUT /goals/:id**: Updates a goal by ID.
+- **PATCH /goals/:id**: Partially updates a goal by ID.
+- **DELETE /goals/:id**: Deletes a goal by ID.
+
+### Dashboard (Admin-Only):
+- **GET /dashboard**: Displays a dashboard view with all users, intervals and goals.
+- **POST /dashboard/intervals**: Creates a new interval linked to a specific user.
+- **PUT /dashboard/intervals/:id**: Updates an interval by ID.
+- **PATCH /dashboard/intervals/:id**: Partially updates an interval by ID.
+- **DELETE /dashboard/intervals/:id**: Deletes an interval by ID.
+- **POST /dashboard/goals**: Creates a new goal associated with a specific interval.
+- **PUT /dashboard/goals/:id**: Updates a goal by ID.
+- **DELETE /dashboard/goals/:id**: Deletes a goal by ID.
+
+### Profile (Current User):
+- **GET /profile**: Retrieves the profile view of the current user including their intervals and goals.
+- **PUT /profile**: Updates the current user’s profile.
+- **PATCH /profile**: Partially updates the current user’s profile.
+- **DELETE /profile**: Deletes the current user’s profile.
+- **POST /profile/intervals**: Creates a new interval linked to the current user.
+- **PUT /profile/intervals/:id**: Updates an interval linked to the current user by ID.
+- **PATCH /profile/intervals/:id**: Partially updates an interval linked to the current user by ID.
+- **DELETE /profile/intervals/:id**: Deletes an interval linked to the current user by ID.
+- **POST /profile/goals**: Creates a new goal linked to an interval owned by the current user.
+- **PUT /profile/goals/:id**: Updates a goal owned by the current user by ID.
+- **DELETE /profile/goals/:id**: Deletes a goal owned by the current user by ID.
 
 
 ## Testing
