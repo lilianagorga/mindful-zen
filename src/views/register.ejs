@@ -25,23 +25,9 @@
       </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/register-utils.bundle.js"></script>
     <script>
-      document.getElementById('registerForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const data = {
-          email: document.getElementById('email').value,
-          password: document.getElementById('password').value,
-          firstName: document.getElementById('firstName').value,
-          lastName: document.getElementById('lastName').value,
-          source: document.getElementById('source').value
-        };
-        try {
-          await axios.post('/register', data, { withCredentials: true });
-          window.location.href = '/login';
-        } catch (error) {
-          alert('Registration failed: ' + error.response.data.message);
-        }
-      });
+      initializeRegister();
     </script>
   </main>
   <%- include('partials/footer') %>

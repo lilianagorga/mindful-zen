@@ -20,21 +20,9 @@
       </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/login-utils.bundle.js"></script>
     <script>
-      axios.defaults.withCredentials = true;
-      document.getElementById('loginForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const data = {
-          email: document.getElementById('email').value,
-          password: document.getElementById('password').value,
-        };
-        try {
-          const response = await axios.post('/login', data, { withCredentials: true });
-          window.location.href = '/';
-        } catch (error) {
-          alert('Login failed: ' + error.response.data.message);
-        }
-      });
+      initializeLogin();
     </script>
   </main>
   <%- include('partials/footer') %>
