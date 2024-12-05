@@ -226,6 +226,8 @@ browserify dist/utils/utils.js -o public/js/bundle.js
 <script src="/js/bundle.js"></script>
 ```
 
+## Live Deploy
+* The application will be accessible at https://mindful-zen.lilianagorga.org
 
 ## Contributing
 
