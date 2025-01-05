@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { MongoClient } from 'mongodb';
 import { CustomNamingStrategy } from '../custom-naming-strategy';
@@ -17,7 +17,7 @@ import { CustomNamingStrategy } from '../custom-naming-strategy';
         const databaseName = isTestEnv
           ? process.env.DB_TEST_NAME
           : process.env.DB_NAME;
-        return {
+        const config: TypeOrmModuleOptions = {
           type: 'postgres',
           host: process.env.DB_HOST,
           port: parseInt(process.env.DB_PORT, 10),
@@ -28,6 +28,9 @@ import { CustomNamingStrategy } from '../custom-naming-strategy';
           synchronize: false,
           namingStrategy: new CustomNamingStrategy(),
         };
+        console.log('TypeORM Configuration:', config);
+
+        return config;
       },
     }),
   ],
