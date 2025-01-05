@@ -15,8 +15,6 @@ import { HomeModule } from './home/home.module';
 import { DashboardController } from './UI/dashboard.controller';
 import { ProfileController } from './UI/profile.controller';
 import { RolesGuard } from './roles/roles.guard';
-import { MongoUsersController } from './database/mongo/mongo-users.controller';
-import { MongoService } from './database/mongo/mongo.service';
 
 @Module({
   imports: [
@@ -34,14 +32,13 @@ import { MongoService } from './database/mongo/mongo.service';
       },
     ]),
   ],
-  controllers: [DashboardController, ProfileController, MongoUsersController],
+  controllers: [DashboardController, ProfileController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
     RolesGuard,
-    MongoService,
   ],
 })
 export class AppModule {}
