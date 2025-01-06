@@ -10,16 +10,21 @@ import { CustomNamingStrategy } from '../custom-naming-strategy';
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => {
+        const isProduction = process.env.NODE_ENV === 'production';
         const isTestEnv = process.env.NODE_ENV === 'test';
-        const databaseName = isTestEnv
-          ? process.env.DB_TEST_NAME
-          : process.env.DB_NAME;
+        const databaseName = isProduction
+          ? process.env.PROD_DB_NAME
+          : isTestEnv
+            ? process.env.DB_TEST_NAME
+            : process.env.DB_NAME;
         return {
           type: 'postgres',
-          host: process.env.DB_HOST,
+          host: isProduction ? process.env.PROD_DB_HOST : process.env.DB_HOST,
           port: parseInt(process.env.DB_PORT, 10),
           username: process.env.DB_USER,
-          password: process.env.DB_PASS,
+          password: isProduction
+            ? process.env.PROD_DB_PASS
+            : process.env.DB_PASS,
           database: databaseName,
           autoLoadEntities: true,
           synchronize: false,
