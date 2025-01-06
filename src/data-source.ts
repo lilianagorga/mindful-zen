@@ -11,8 +11,10 @@ const isProduction = process.env.NODE_ENV === 'production';
 const AppDataSource = new DataSource({
   type: 'postgres',
   host: isProduction ? process.env.PROD_DB_HOST : process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT, 10),
-  username: process.env.DB_USER,
+  port: isProduction
+    ? parseInt(process.env.PROD_DB_PORT, 10)
+    : parseInt(process.env.DB_PORT, 10),
+  username: isProduction ? process.env.PROD_DB_USER : process.env.DB_USER,
   password: isProduction ? process.env.PROD_DB_PASS : process.env.DB_PASS,
   database: isProduction
     ? process.env.PROD_DB_NAME
